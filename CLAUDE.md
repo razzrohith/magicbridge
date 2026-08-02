@@ -33,6 +33,10 @@ Copy, comparison table, "$549 once", the stealth story, "even when it's stuck", 
 sealed-box framing all come from `E:\Startup\magicbridge-diy\docs\presentation`. **Never
 name the internals** (no Raspberry Pi / capture board / SD card) — the box is a sealed product.
 
+## Copy rules
+- **No em dashes (—) anywhere.** The owner flagged them as an AI tell — use commas, periods, colons, or parentheses. Avoid other AI-writing tells (rule-of-three everywhere, "isn't just X, it's Y", brochure filler). Copy should read human and premium.
+- All finalized copy lives in `docs/content.md`. The box is a **sealed product** — never name internals (Raspberry Pi / C790 / capture board / SD card).
+
 ## Tone / safety
 "A box that controls a computer undetected" reads as spyware to cold visitors and payment
 processors. Keep **"for hardware you own"** in the hero + a dedicated Trust section. Renders

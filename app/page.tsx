@@ -42,7 +42,7 @@ export default function Home() {
 
         <p className="mt-8 max-w-xl text-lg leading-relaxed text-ink-dim">
           A small box you plug into your other computer. See its screen and take
-          over, live, from any browser in your house — and that computer can’t
+          over, live, from any browser in your house, and that computer can’t
           tell anything is there.
         </p>
 
