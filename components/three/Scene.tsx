@@ -32,13 +32,10 @@ export function Scene() {
       // withdraw it if the WebGL2 probe (or a later media change) says otherwise.
       document.documentElement.classList.toggle("stage3d", ok);
     };
-    // Defer past the load window so the 3D chunk never competes with LCP.
-    const start = () =>
-      window.requestIdleCallback
-        ? window.requestIdleCallback(decide, { timeout: 2000 })
-        : window.setTimeout(decide, 300);
-    if (document.readyState === "complete") start();
-    else window.addEventListener("load", start, { once: true });
+    // Mount as soon as hydration runs. The hero headline paints from CSS (not
+    // JS), so the 3D chunk is not on the LCP path and gating it behind
+    // load + requestIdleCallback only left the hero visibly half-empty for ~1s.
+    decide();
 
     // Re-evaluate if the user flips reduced-motion or swaps to a coarse pointer.
     const rm = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -48,7 +45,6 @@ export function Scene() {
     return () => {
       rm.removeEventListener("change", decide);
       fine.removeEventListener("change", decide);
-      window.removeEventListener("load", start);
     };
   }, []);
 
