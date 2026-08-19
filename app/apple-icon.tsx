@@ -1,5 +1,9 @@
 import { ImageResponse } from "next/og";
 
+// Required by output: "export": these image routes are Route Handlers, so
+// Next needs to be told they are prerenderable rather than server-rendered.
+export const dynamic = "force-static";
+
 export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
 

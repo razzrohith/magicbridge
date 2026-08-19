@@ -5,10 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start -p 3001",
+    "start": "npx --yes serve out -l 3001",
     "lint": "biome check .",
     "format": "biome format --write .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "preview": "npx --yes serve out -l 3001"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
@@ -32,5 +33,6 @@
     "@types/three": "^0.185.3",
     "tailwindcss": "^4",
     "typescript": "^5"
-  }
+  },
+  "packageManager": "pnpm@10.33.2"
 }

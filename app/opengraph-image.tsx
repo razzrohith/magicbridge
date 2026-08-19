@@ -1,5 +1,9 @@
 import { ImageResponse } from "next/og";
 
+// Required by output: "export": these image routes are Route Handlers, so
+// Next needs to be told they are prerenderable rather than server-rendered.
+export const dynamic = "force-static";
+
 export const alt = "MagicBridge · the invisible remote control for a computer you own";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";

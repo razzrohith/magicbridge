@@ -23,7 +23,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 // Update to the real domain when hosting lands (Phase 8). Drives OG/canonical URLs.
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://magicbridge.example";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://magicbridge.razzrohith.com";
 
 const DESCRIPTION =
   "A small box you plug into your other computer to see and control it, live, from any browser in your house, and that computer can’t tell anything is there. $549, one-time. For hardware you own.";
