@@ -11,6 +11,7 @@ import { Features } from "@/components/sections/Features";
 import { Hero } from "@/components/sections/Hero";
 import { HowItWorks } from "@/components/sections/HowItWorks";
 import { Problem } from "@/components/sections/Problem";
+import { RemoteSecure } from "@/components/sections/RemoteSecure";
 import { Reveal } from "@/components/sections/Reveal";
 import { Trust } from "@/components/sections/Trust";
 import { Scene } from "@/components/three/Scene";
@@ -74,6 +75,7 @@ export default function Home() {
         <Features />
         <ControlRoom />
         <DeepDive />
+        <RemoteSecure />
         <Trust />
         <Comparison />
         <Close />

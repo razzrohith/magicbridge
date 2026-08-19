@@ -57,11 +57,29 @@ Flow: the other computer’s screen → the MagicBridge box (sees the screen, se
 Value points: Feels instant (live video, not a slideshow) · Private (stays on your own network) · Simple (two cables and a web page) · Self-setup (from your phone, no cable).
 NOTE (honesty): don’t claim fastest (PiKVM/JetKVM do 1080p60). The video bitrate control is inert on this hardware; quality is set by frame interval, so never advertise a bitrate dial.
 
+## 6b · Remote & protected (Tailscale + the security stack)
+Headline: Reach it from anywhere. Nobody else can.
+Eyebrow: Included, nothing extra to buy.
+
+Remote access: Tailscale is built in. Turn it on once and your box joins a private network only your devices can see, so you can take over from a hotel, an office, or a phone on mobile data exactly as you would from the next room.
+Path: You (any browser, anywhere) → private link (encrypted, direct to your box) → the box (on your network, at home) → the target (sees a monitor and a keyboard).
+Note: No ports opened on your router, and no cloud service in the middle holding your screen. The picture and your keystrokes travel straight between your devices.
+
+Six layers between it and everyone else:
+1. A password on the page. The control page will not open without it, and the admin side keeps its own separate password.
+2. A second factor. Add a 6-digit code from your authenticator app, with recovery codes you save once. Signing out ends remembered logins everywhere.
+3. Lock it to your private network. Turn on private-network-only access and the box stops answering anything else, even on your own WiFi.
+4. Kick anyone off. Every live session shows its address, browser and how long it has been connected, with one button to disconnect it.
+5. Encrypted where it rests. Its settings and secrets are held encrypted on the device, unlocked only as it starts.
+6. Logs that never land. Sign-ins and connection history live in memory and are gone on restart. Your WiFi name is never written to storage.
+
+NOTE (sealed product): describe these by what they DO. Never name the encryption scheme, the in-memory log mechanism, or any path. Do not claim rivals lack remote access, several also support Tailscale.
+
 ## 7 · Trust
 Locked down, and for a computer you own.
-- Password-protected, with a second factor. The web page needs your password, and a 6-digit code if you turn that on. Nobody opens it and takes over without both.
+- Nothing phones home. No account to create, no cloud service to depend on, and no telemetry. The box works the same if it never reaches the wider internet again.
 - Stays on your network. The screen and controls never leave your home. There’s no cloud server for anyone else to reach. Away from home, it comes with you securely over Tailscale.
-- You can see and end any session. A live list shows every connection, and one button disconnects it.
+- Stays on your network. The screen and your controls travel between your own devices. There is no server in the middle holding a copy.
 - It’s for YOUR machine. Built to run a second computer you own, privately. Not to watch someone else’s.
 
 ## 8 · Comparison (factual)

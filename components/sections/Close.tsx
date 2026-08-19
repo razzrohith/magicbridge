@@ -45,7 +45,7 @@ const pricePoints = [
 export function Close() {
   return (
     <section id="price" className="relative z-10 mx-auto max-w-6xl px-8 py-28 sm:px-14 sm:py-40">
-      <SectionHeading index="09" label="Ready today" />
+      <SectionHeading index="10" label="Ready today" />
 
       <h2
         data-kinetic

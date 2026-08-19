@@ -60,7 +60,7 @@ export function Comparison() {
   return (
     <section className="relative z-10 border-y border-line bg-stage-2/40">
       <div className="mx-auto max-w-6xl px-8 py-28 sm:px-14 sm:py-36">
-        <SectionHeading index="08" label="Comparison" />
+        <SectionHeading index="09" label="Comparison" />
 
         <h2
           data-kinetic

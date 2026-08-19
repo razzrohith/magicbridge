@@ -22,7 +22,7 @@ const points = [
 export function Trust() {
   return (
     <section className="relative z-10 mx-auto max-w-6xl px-8 py-28 sm:px-14 sm:py-36">
-      <SectionHeading index="07" label="Trust" />
+      <SectionHeading index="08" label="Trust" />
 
       <h2
         data-kinetic
