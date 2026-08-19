@@ -76,40 +76,92 @@ body {
   );
 }
 
-/* Custom cursor follower */
-.cursor-ring,
-.cursor-dot {
+/* ---- Target reticle cursor ----
+   Four corner brackets that lock onto interactive elements, plus an echo that
+   trails behind. Everything is transform/opacity driven; width and height only
+   change on hover, not per frame. */
+.cursor-reticle {
   position: fixed;
   top: 0;
   left: 0;
   z-index: 100;
+  width: 26px;
+  height: 26px;
   pointer-events: none;
   opacity: 0;
   will-change: transform;
 }
-.cursor-ring {
-  width: 34px;
-  height: 34px;
-  border-radius: 9999px;
-  border: 1.5px solid color-mix(in oklab, var(--color-cyan) 65%, transparent);
+.cursor-reticle span {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border: 1.5px solid var(--color-cyan);
+  transition:
+    width 0.25s,
+    height 0.25s,
+    border-color 0.25s;
 }
-.cursor-dot {
-  width: 6px;
-  height: 6px;
+.cursor-reticle .c-tl {
+  top: 0;
+  left: 0;
+  border-right: 0;
+  border-bottom: 0;
+}
+.cursor-reticle .c-tr {
+  top: 0;
+  right: 0;
+  border-left: 0;
+  border-bottom: 0;
+}
+.cursor-reticle .c-bl {
+  bottom: 0;
+  left: 0;
+  border-right: 0;
+  border-top: 0;
+}
+.cursor-reticle .c-br {
+  bottom: 0;
+  right: 0;
+  border-left: 0;
+  border-top: 0;
+}
+/* Centre pip: the aiming point while nothing is targeted. */
+.cursor-reticle .c-core {
+  top: 50%;
+  left: 50%;
+  width: 3px;
+  height: 3px;
+  margin: -1.5px 0 0 -1.5px;
+  border: 0;
   border-radius: 9999px;
   background: var(--color-cyan);
-  box-shadow: 0 0 10px var(--color-cyan);
+  box-shadow: 0 0 8px var(--color-cyan);
+  transition: opacity 0.2s;
 }
-.cursor-ping {
+/* Locked onto a control: brackets lengthen, the pip gets out of the way. */
+.cursor-reticle.is-locked span {
+  width: 13px;
+  height: 13px;
+}
+.cursor-reticle.is-locked .c-core {
+  opacity: 0;
+}
+
+/* The echo: the same input, arriving a beat later. */
+.cursor-echo {
   position: fixed;
-  z-index: 100;
-  width: 64px;
-  height: 64px;
-  margin: -32px 0 0 -32px;
-  border-radius: 9999px;
-  border: 1.5px solid color-mix(in oklab, var(--color-cyan) 55%, transparent);
+  top: 0;
+  left: 0;
+  z-index: 99;
+  width: 9px;
+  height: 9px;
+  border: 1.5px solid color-mix(in oklab, var(--color-cyan) 70%, transparent);
+  border-radius: 2px;
   pointer-events: none;
+  opacity: 0;
+  will-change: transform, opacity;
 }
+
 /* Hide the native cursor only once the custom follower is live (JS-gated). */
 html.cursor-hidden * {
   cursor: none;
@@ -117,8 +169,8 @@ html.cursor-hidden * {
 
 @media (prefers-reduced-motion: reduce) {
   .cursor-glow,
-  .cursor-ring,
-  .cursor-dot {
+  .cursor-reticle,
+  .cursor-echo {
     display: none;
   }
 }
@@ -128,9 +180,8 @@ html.cursor-hidden * {
   html.cursor-hidden * {
     cursor: auto;
   }
-  .cursor-ring,
-  .cursor-dot,
-  .cursor-ping {
+  .cursor-reticle,
+  .cursor-echo {
     display: none;
   }
 }

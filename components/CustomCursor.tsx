@@ -6,129 +6,191 @@ import { useRef } from "react";
 import { isFinePointer, prefersReducedMotion } from "@/lib/motion";
 
 /**
- * Immersive cursor layer (rule 8): custom ring+dot follower, magnetic pull on
- * [data-magnetic], a grow state over interactive elements, a radar-ping on
- * click, and the ambient cyan flashlight glow (writes --mx/--my for CSS).
+ * The cursor is the product argument in miniature.
  *
- * All gated behind fine-pointer + no-reduced-motion, and mounted only after the
- * follower exists, so touch/keyboard/reduced-motion users keep the native
- * cursor and every hover affordance still has a :focus-visible fallback.
- * useGSAP (rule 3) so the quickTo setters auto-revert; one pointermove listener.
+ * RETICLE: four corner brackets that fly out and LOCK onto whatever is
+ * interactive, the way a capture device acquires a target. Free-floating it is
+ * a small aiming mark; over a control it snaps to that control's exact box, so
+ * the affordance is drawn rather than implied.
+ *
+ * ECHO: a fainter mark trailing behind, arriving a beat late. That is the whole
+ * product in one detail: your hand here, the pointer landing over there. It
+ * only shows while you are actually moving, so at rest there is exactly one
+ * cursor and it never reads as lag.
+ *
+ * Gated behind fine-pointer + no-reduced-motion (rule 8), so touch, keyboard
+ * and motion-sensitive visitors keep the native cursor untouched. One
+ * pointermove listener, all movement via gsap.quickTo, no React state.
  */
 export function CustomCursor() {
-  const ring = useRef<HTMLDivElement>(null);
-  const dot = useRef<HTMLDivElement>(null);
+  const reticle = useRef<HTMLDivElement>(null);
+  const echo = useRef<HTMLDivElement>(null);
   const glow = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
     if (!isFinePointer() || prefersReducedMotion()) return;
-    const ringEl = ring.current;
-    const dotEl = dot.current;
-    const glowEl = glow.current;
-    if (!ringEl || !dotEl || !glowEl) return;
+    const ret = reticle.current;
+    const ech = echo.current;
+    const glw = glow.current;
+    if (!ret || !ech || !glw) return;
 
     document.documentElement.classList.add("cursor-hidden");
-    gsap.set([ringEl, dotEl], { xPercent: -50, yPercent: -50, opacity: 1 });
+    gsap.set([ret, ech], { xPercent: -50, yPercent: -50, opacity: 1 });
 
-    const ringX = gsap.quickTo(ringEl, "x", { duration: 0.5, ease: "power3" });
-    const ringY = gsap.quickTo(ringEl, "y", { duration: 0.5, ease: "power3" });
-    const dotX = gsap.quickTo(dotEl, "x", { duration: 0.12, ease: "power3" });
-    const dotY = gsap.quickTo(dotEl, "y", { duration: 0.12, ease: "power3" });
-    const glowX = gsap.quickTo(glowEl, "x", { duration: 0.6, ease: "power3" });
-    const glowY = gsap.quickTo(glowEl, "y", { duration: 0.6, ease: "power3" });
+    // The reticle leads (near-instant), the echo lags: that gap IS the idea.
+    const retX = gsap.quickTo(ret, "x", { duration: 0.06, ease: "power3" });
+    const retY = gsap.quickTo(ret, "y", { duration: 0.06, ease: "power3" });
+    const echX = gsap.quickTo(ech, "x", { duration: 0.42, ease: "power2" });
+    const echY = gsap.quickTo(ech, "y", { duration: 0.42, ease: "power2" });
+    const glowX = gsap.quickTo(glw, "x", { duration: 0.6, ease: "power3" });
+    const glowY = gsap.quickTo(glw, "y", { duration: 0.6, ease: "power3" });
+    const echoFade = gsap.quickTo(ech, "opacity", { duration: 0.35, ease: "power2" });
 
-    // Active magnet state: element + cached rect + reusable setters.
-    let magnetEl: HTMLElement | null = null;
-    let magnetRect: DOMRect | null = null;
+    let lockedEl: HTMLElement | null = null;
+    let lastX = 0;
+    let lastY = 0;
+    // Speed is only sampled on pointermove, so when the pointer stops moving no
+    // further sample arrives and the echo would sit there at its last opacity.
+    // This decays it to nothing shortly after the last movement.
+    let restTimer = 0;
     let magX: ((v: number) => void) | null = null;
     let magY: ((v: number) => void) | null = null;
+    let magnetRect: DOMRect | null = null;
 
     const onMove = (e: PointerEvent) => {
-      ringX(e.clientX);
-      ringY(e.clientY);
-      dotX(e.clientX);
-      dotY(e.clientY);
-      glowX(e.clientX);
-      glowY(e.clientY);
+      const { clientX: x, clientY: y } = e;
+      // Echo brightens with speed, so it only appears when input is in flight.
+      const speed = Math.hypot(x - lastX, y - lastY);
+      lastX = x;
+      lastY = y;
+      echoFade(Math.min(0.5, speed * 0.045));
+      window.clearTimeout(restTimer);
+      restTimer = window.setTimeout(() => echoFade(0), 90);
 
-      if (magnetEl && magnetRect && magX && magY) {
-        magX((e.clientX - (magnetRect.left + magnetRect.width / 2)) * 0.3);
-        magY((e.clientY - (magnetRect.top + magnetRect.height / 2)) * 0.3);
+      echX(x);
+      echY(y);
+      glowX(x);
+      glowY(y);
+      // While locked the reticle stays on the target; the echo keeps showing
+      // where your hand actually is.
+      if (!lockedEl) {
+        retX(x);
+        retY(y);
+      }
+      if (magnetRect && magX && magY) {
+        magX((x - (magnetRect.left + magnetRect.width / 2)) * 0.28);
+        magY((y - (magnetRect.top + magnetRect.height / 2)) * 0.28);
       }
     };
 
-    const grow = () => gsap.to(ringEl, { scale: 2.3, duration: 0.3, ease: "power3" });
-    const shrink = () => gsap.to(ringEl, { scale: 1, duration: 0.3, ease: "power3" });
+    /** Snap the reticle onto a control's real box. */
+    const lockOn = (el: HTMLElement) => {
+      lockedEl = el;
+      const r = el.getBoundingClientRect();
+      ret.classList.add("is-locked");
+      gsap.to(ret, {
+        x: r.left + r.width / 2,
+        y: r.top + r.height / 2,
+        width: r.width + 18,
+        height: r.height + 14,
+        duration: 0.32,
+        ease: "expo.out",
+      });
+    };
+
+    const release = () => {
+      lockedEl = null;
+      ret.classList.remove("is-locked");
+      gsap.to(ret, { width: 26, height: 26, duration: 0.34, ease: "expo.out" });
+    };
+
+    const TARGETS = "a, button, [data-magnetic], [role='button']";
 
     const onOver = (e: PointerEvent) => {
-      const t = (e.target as HTMLElement)?.closest<HTMLElement>(
-        "a, button, [data-magnetic], [role='button']",
-      );
-      if (!t) return;
-      grow();
+      const t = (e.target as HTMLElement)?.closest<HTMLElement>(TARGETS);
+      if (!t || t === lockedEl) return;
+      lockOn(t);
       const magnet = t.closest<HTMLElement>("[data-magnetic]");
-      if (magnet && magnet !== magnetEl) {
-        magnetEl = magnet;
-        magnetRect = magnet.getBoundingClientRect(); // one read per hover, not per move
+      if (magnet) {
+        magnetRect = magnet.getBoundingClientRect(); // one read per hover
         magX = gsap.quickTo(magnet, "x", { duration: 0.4, ease: "power3" });
         magY = gsap.quickTo(magnet, "y", { duration: 0.4, ease: "power3" });
       }
     };
+
     const onOut = (e: PointerEvent) => {
-      const t = (e.target as HTMLElement)?.closest<HTMLElement>(
-        "a, button, [data-magnetic], [role='button']",
-      );
-      if (!t) return;
-      shrink();
-      if (magnetEl && !magnetEl.contains(e.relatedTarget as Node)) {
-        gsap.to(magnetEl, { x: 0, y: 0, duration: 0.6, ease: "elastic.out(1, 0.4)" });
-        magnetEl = null;
-        magnetRect = null;
-        magX = null;
-        magY = null;
+      const t = (e.target as HTMLElement)?.closest<HTMLElement>(TARGETS);
+      if (!t || t !== lockedEl) return;
+      if (t.contains(e.relatedTarget as Node)) return;
+      release();
+      if (magX && magY) {
+        gsap.to(t.closest("[data-magnetic]") ?? t, {
+          x: 0,
+          y: 0,
+          duration: 0.6,
+          ease: "elastic.out(1, 0.4)",
+        });
       }
+      magnetRect = null;
+      magX = null;
+      magY = null;
     };
 
-    const onDown = (e: PointerEvent) => {
-      const ping = document.createElement("div");
-      ping.className = "cursor-ping";
-      ping.style.left = `${e.clientX}px`;
-      ping.style.top = `${e.clientY}px`;
-      document.body.appendChild(ping);
-      gsap.fromTo(
-        ping,
-        { scale: 0, opacity: 0.6 },
-        {
-          scale: 1,
-          opacity: 0,
-          duration: 0.7,
-          ease: "power2.out",
-          onComplete: () => ping.remove(),
-        },
-      );
+    // Click reads as a lock confirming, not a generic ripple.
+    const onDown = () => {
+      gsap
+        .timeline()
+        .to(ret, { scale: 0.86, duration: 0.09, ease: "power2.out" })
+        .to(ret, { scale: 1, duration: 0.34, ease: "elastic.out(1, 0.45)" });
+    };
+
+    // A locked reticle would drift off its target as the page scrolls. Lenis
+    // emits a scroll event every frame, so throttle to one rAF and use gsap.set
+    // (the size has not changed, only the position) rather than spawning a new
+    // tween and reading layout on every event.
+    let scrollRaf = 0;
+    const onScroll = () => {
+      if (!lockedEl || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(() => {
+        scrollRaf = 0;
+        if (!lockedEl) return;
+        const r = lockedEl.getBoundingClientRect();
+        gsap.set(ret, { x: r.left + r.width / 2, y: r.top + r.height / 2 });
+      });
     };
 
     window.addEventListener("pointermove", onMove, { passive: true });
     window.addEventListener("pointerover", onOver, { passive: true });
     window.addEventListener("pointerout", onOut, { passive: true });
     window.addEventListener("pointerdown", onDown, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
 
     return () => {
+      window.clearTimeout(restTimer);
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
       document.documentElement.classList.remove("cursor-hidden");
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerover", onOver);
       window.removeEventListener("pointerout", onOut);
       window.removeEventListener("pointerdown", onDown);
+      window.removeEventListener("scroll", onScroll);
     };
   }, []);
 
   return (
     <>
-      {/* ambient cyan flashlight; also the reduced-motion-safe glow */}
+      {/* ambient cyan flashlight */}
       <div ref={glow} className="cursor-glow" aria-hidden />
-      {/* custom follower */}
-      <div ref={ring} className="cursor-ring" aria-hidden />
-      <div ref={dot} className="cursor-dot" aria-hidden />
+      {/* the echo: your input, arriving a beat late */}
+      <div ref={echo} className="cursor-echo" aria-hidden />
+      {/* the reticle: four brackets that lock onto a target */}
+      <div ref={reticle} className="cursor-reticle" aria-hidden>
+        <span className="c-tl" />
+        <span className="c-tr" />
+        <span className="c-bl" />
+        <span className="c-br" />
+        <span className="c-core" />
+      </div>
     </>
   );
 }
