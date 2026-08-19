@@ -5,24 +5,27 @@ on:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+# No blanket grant: the build job runs the whole dependency graph, so it gets
+# read-only, and only the deploy job (which runs no third-party code) can publish.
+permissions: {}
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  # false, not true: cancelling mid-publish can abandon a deployment part-done.
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
-      # This project uses pnpm (pnpm-lock.yaml), not npm. pnpm must be installed
-      # before setup-node so that `cache: pnpm` can find the store.
-      # Version comes from package.json "packageManager", so CI matches local.
-      - uses: pnpm/action-setup@v4
+        with:
+          # Don't leave GITHUB_TOKEN sitting in .git/config for the rest of the job.
+          persist-credentials: false
+      # Third-party action, so pinned to a commit rather than a movable tag.
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -30,6 +33,10 @@ jobs:
       - run: pnpm install --frozen-lockfile
       # next.config.ts sets output: "export", so this writes static files to out/
       - run: pnpm build
+      # Losing public/CNAME silently drops the custom domain on the next deploy,
+      # so fail the build instead of publishing without it.
+      - name: Verify custom domain file survived the build
+        run: test -s out/CNAME && grep -qx 'magicbridge.razzrohith.com' out/CNAME
       - uses: actions/upload-pages-artifact@v3
         with:
           path: out
@@ -37,6 +44,9 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

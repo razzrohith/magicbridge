@@ -57,11 +57,27 @@ export const metadata: Metadata = {
     title: "MagicBridge · The invisible remote control for a computer you own",
     description: DESCRIPTION,
     locale: "en_US",
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+        alt: "MagicBridge · the invisible remote control for a computer you own",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "MagicBridge · The invisible remote control for a computer you own",
     description: DESCRIPTION,
+    images: ["/og.png"],
+  },
+  // Static files, not next/og routes: a metadata route exports without a file
+  // extension, and GitHub Pages then serves it as application/octet-stream,
+  // which social scrapers reject.
+  icons: {
+    icon: "/icon.svg",
+    apple: "/apple-touch-icon.png",
   },
   robots: {
     index: true,

@@ -5,11 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "npx --yes serve out -l 3001",
+    "start": "serve out -l 3001",
     "lint": "biome check .",
     "format": "biome format --write .",
     "typecheck": "tsc --noEmit",
-    "preview": "npx --yes serve out -l 3001"
+    "preview": "serve out -l 3001"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
@@ -32,7 +32,8 @@
     "@types/react-dom": "^19",
     "@types/three": "^0.185.3",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "serve": "^14.2.4"
   },
   "packageManager": "pnpm@10.33.2"
 }
