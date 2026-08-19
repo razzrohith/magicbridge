@@ -42,7 +42,7 @@ export function DeepDive() {
           className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4"
         >
           {stats.map((s) => (
-            <div key={s.unit} className="bg-stage p-9">
+            <div key={s.unit} className="u-card bg-stage p-9">
               <p className="font-display text-4xl font-bold tracking-tight text-ink tabular-nums sm:text-5xl">
                 {s.prefix}
                 <span data-count={s.count}>{s.count}</span>

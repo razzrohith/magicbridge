@@ -9,8 +9,7 @@ export function SiteHeader() {
       </div>
       <a
         href="#price"
-        data-magnetic
-        className="rounded-full border border-line px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-ink-dim transition-colors hover:border-cyan/40 hover:text-ink focus-visible:border-cyan/40 focus-visible:text-ink"
+        className="u-ghost rounded-full border border-line px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-ink-dim"
       >
         $549 · once
       </a>

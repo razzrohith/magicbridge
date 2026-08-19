@@ -59,7 +59,7 @@ export function Close() {
         className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2"
       >
         {ready.map((r) => (
-          <div key={r.title} className="bg-stage p-8">
+          <div key={r.title} className="u-card bg-stage p-8">
             <p className="font-display text-xl font-bold tracking-tight">{r.title}</p>
             <p className="mt-3 text-[15px] leading-relaxed text-ink-dim">{r.body}</p>
           </div>
@@ -82,8 +82,7 @@ export function Close() {
             </p>
             <a
               href="#price"
-              data-magnetic
-              className="mt-10 inline-block rounded-full bg-cyan px-8 py-3.5 font-mono text-xs font-medium uppercase tracking-widest text-stage transition-transform hover:-translate-y-0.5 focus-visible:-translate-y-0.5"
+              className="u-press mt-10 inline-block rounded-full bg-cyan px-8 py-3.5 font-mono text-xs font-medium uppercase tracking-widest text-stage"
             >
               Get MagicBridge
             </a>

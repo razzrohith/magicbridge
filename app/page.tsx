@@ -1,5 +1,5 @@
 import { AnimationLayer } from "@/components/AnimationLayer";
-import { CustomCursor } from "@/components/CustomCursor";
+import { PointerGlow } from "@/components/PointerGlow";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SmoothScroll } from "@/components/SmoothScroll";
@@ -41,7 +41,7 @@ export default function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
       <SmoothScroll />
       <AnimationLayer />
-      <CustomCursor />
+      <PointerGlow />
 
       {/* Scroll progress line (scaled by ScrollTrigger; inert under reduced motion).
           Initial scale set via `transform` : NOT Tailwind's `scale-x-0` (native

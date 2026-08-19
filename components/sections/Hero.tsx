@@ -34,14 +34,13 @@ export function Hero() {
         <div className="mt-11 flex flex-wrap items-center gap-5">
           <a
             href="#price"
-            data-magnetic
-            className="rounded-full bg-cyan px-7 py-3 font-mono text-xs font-medium uppercase tracking-widest text-stage transition-transform hover:-translate-y-0.5 focus-visible:-translate-y-0.5"
+            className="u-press rounded-full bg-cyan px-7 py-3 font-mono text-xs font-medium uppercase tracking-widest text-stage"
           >
             $549 · once
           </a>
           <a
             href="#how"
-            className="group inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-ink-faint transition-colors hover:text-ink-dim focus-visible:text-ink-dim"
+            className="group inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-ink-faint transition-colors hover:text-ink focus-visible:text-ink"
           >
             See how it works
             <span className="inline-block transition-transform group-hover:translate-y-0.5">↓</span>

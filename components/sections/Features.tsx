@@ -47,10 +47,7 @@ export function Features() {
         className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3"
       >
         {features.map((f) => (
-          <div
-            key={f.title}
-            className={`group bg-stage p-8 transition-colors hover:bg-panel/50 ${f.span ?? ""}`}
-          >
+          <div key={f.title} className={`u-card bg-stage p-8 ${f.span ?? ""}`}>
             <p className="font-display text-xl font-bold tracking-tight text-ink">{f.title}</p>
             <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-ink-dim">{f.body}</p>
           </div>

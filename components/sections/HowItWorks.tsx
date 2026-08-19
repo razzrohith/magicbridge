@@ -35,7 +35,7 @@ export function HowItWorks() {
         className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-line bg-line md:grid-cols-3"
       >
         {steps.map((s) => (
-          <div key={s.n} className="flex flex-col bg-stage p-9">
+          <div key={s.n} className="u-card flex flex-col bg-stage p-9">
             <span className="font-mono text-sm text-cyan/80">{s.n.padStart(2, "0")}</span>
             <p className="mt-6 font-display text-2xl font-bold tracking-tight">{s.title}</p>
             <p className="mt-4 text-[15px] leading-relaxed text-ink-dim">{s.body}</p>

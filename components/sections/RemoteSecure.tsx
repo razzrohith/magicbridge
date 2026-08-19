@@ -88,7 +88,7 @@ export function RemoteSecure() {
           <div data-reveal className="lg:pt-8">
             <ol className="grid list-none gap-px overflow-hidden rounded-2xl border border-line bg-line p-0 sm:grid-cols-2">
               {hops.map((h) => (
-                <li key={h.k} className="bg-stage p-6">
+                <li key={h.k} className="u-card bg-stage p-6">
                   <span className="font-display text-base font-bold tracking-tight text-cyan">
                     {h.k}
                   </span>

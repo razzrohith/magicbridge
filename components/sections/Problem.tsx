@@ -33,7 +33,7 @@ export function Problem() {
         className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-3"
       >
         {problems.map((p) => (
-          <div key={p.lead} className="bg-stage p-8">
+          <div key={p.lead} className="u-card bg-stage p-8">
             <p className="font-display text-xl font-bold tracking-tight text-ink">{p.lead}</p>
             <p className="mt-3 text-[15px] leading-relaxed text-ink-dim">{p.body}</p>
           </div>
