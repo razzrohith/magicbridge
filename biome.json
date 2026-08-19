@@ -10,5 +10,6 @@
   },
   "linter": { "enabled": true, "rules": { "recommended": true } },
   "javascript": { "formatter": { "quoteStyle": "double" } },
+  "css": { "parser": { "tailwindDirectives": true } },
   "assist": { "actions": { "source": { "organizeImports": "on" } } }
 }

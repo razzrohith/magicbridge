@@ -2,14 +2,14 @@
 
 /* ---- Tailwind v4 CSS-first theme (no tailwind.config.js) ---- */
 @theme {
-  --color-stage: #050507;      /* near-black stage, never pure #000 */
+  --color-stage: #050507; /* near-black stage, never pure #000 */
   --color-stage-2: #0a0b11;
   --color-panel: #0e1018;
   --color-line: #1b1f2b;
   --color-ink: #eef1f6;
   --color-ink-dim: #9aa3b2;
-  --color-ink-faint: #565f70;
-  --color-cyan: #12c6e6;       /* the ONE accent */
+  --color-ink-faint: #7c8696; /* AA (~4.6:1) on stage for small mono labels */
+  --color-cyan: #12c6e6; /* the ONE accent */
   --color-cyan-soft: #8beefc;
   --color-cyan-deep: #0b7a94;
 
@@ -25,9 +25,13 @@
   --my: -50vh;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
-html { height: 100%; }
+html {
+  height: 100%;
+}
 body {
   min-height: 100%;
   margin: 0;
@@ -52,19 +56,164 @@ body {
   background-size: 200px 200px;
 }
 
-/* Cursor-reactive cyan glow (immersive hint; upgraded in Phase 5). */
+/* Cursor-reactive cyan flashlight glow. A FIXED-SIZE element moved by transform:
+   repainting a full-viewport gradient at a changing position cost a full-screen
+   paint on every pointermove. */
 .cursor-glow {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 920px;
+  height: 920px;
+  margin: -460px 0 0 -460px;
   z-index: 0;
   pointer-events: none;
+  will-change: transform;
   background: radial-gradient(
-    440px circle at var(--mx) var(--my),
+    circle at 50% 50%,
     color-mix(in oklab, var(--color-cyan) 13%, transparent),
     transparent 62%
   );
 }
 
+/* Custom cursor follower */
+.cursor-ring,
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform;
+}
+.cursor-ring {
+  width: 34px;
+  height: 34px;
+  border-radius: 9999px;
+  border: 1.5px solid color-mix(in oklab, var(--color-cyan) 65%, transparent);
+}
+.cursor-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--color-cyan);
+  box-shadow: 0 0 10px var(--color-cyan);
+}
+.cursor-ping {
+  position: fixed;
+  z-index: 100;
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  border-radius: 9999px;
+  border: 1.5px solid color-mix(in oklab, var(--color-cyan) 55%, transparent);
+  pointer-events: none;
+}
+/* Hide the native cursor only once the custom follower is live (JS-gated). */
+html.cursor-hidden * {
+  cursor: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .cursor-glow { display: none; }
+  .cursor-glow,
+  .cursor-ring,
+  .cursor-dot {
+    display: none;
+  }
+}
+
+/* Forced-colors / high-contrast users need the real pointer back. */
+@media (prefers-contrast: more), (forced-colors: active) {
+  html.cursor-hidden * {
+    cursor: auto;
+  }
+  .cursor-ring,
+  .cursor-dot,
+  .cursor-ping {
+    display: none;
+  }
+}
+
+/* ---- Scroll-entrance motion ----
+   The <head> boot script adds `.motion` to <html> only when motion is allowed
+   (JS on, not reduced-motion). Animatable elements are hidden pre-paint to kill
+   FOUC; GSAP (useGSAP layout effect) sets them visible as it animates. Without
+   JS or with reduced-motion the class is absent, so everything stays visible. */
+html.motion [data-reveal],
+html.motion [data-kinetic] {
+  visibility: hidden;
+}
+
+/* Hero above-the-fold entrance is compositor-only CSS (not JS-gated), so the
+   headline is a real paintable LCP element immediately (rule 7) and never waits
+   on hydration/GSAP. Reduced-motion / no-JS: no `.motion`, so it's static. */
+@keyframes heroRise {
+  from {
+    opacity: 0;
+    transform: translateY(1.4rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+html.motion [data-hero-group] > * {
+  animation: heroRise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+html.motion [data-hero-group] > *:nth-child(2) {
+  animation-delay: 0.07s;
+}
+html.motion [data-hero-group] > *:nth-child(3) {
+  animation-delay: 0.14s;
+}
+html.motion [data-hero-group] > *:nth-child(4) {
+  animation-delay: 0.21s;
+}
+
+.split-line {
+  display: block;
+}
+
+/* Screen-reader-only, for the comparison table cell labels. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- Reveal signature stage ----
+   Gated on `.stage3d` (set by Scene only when the 3D device actually mounts),
+   NOT on `.motion`: otherwise phones / no-WebGL desktops would pin an empty
+   260vh section with no device to animate. Without 3D it's a compact block. */
+html.stage3d .reveal-track {
+  height: 260vh;
+}
+html.stage3d .reveal-stage {
+  position: sticky;
+  top: 0;
+}
+html:not(.stage3d) .reveal-stage {
+  min-height: 55svh;
+}
+
+/* Lenis: it sets html.lenis; keep native scrollbars sane. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
 }

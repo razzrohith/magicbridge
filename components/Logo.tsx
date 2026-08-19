@@ -12,7 +12,7 @@ export function Logo({ size = 40, className }: { size?: number; className?: stri
       <defs>
         <linearGradient id="mb-lg" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#8beefc" />
-          <stop offset="55%" stopColor="#22d3ee" />
+          <stop offset="55%" stopColor="#12c6e6" />
           <stop offset="100%" stopColor="#0b7a94" />
         </linearGradient>
       </defs>
@@ -25,8 +25,20 @@ export function Logo({ size = 40, className }: { size?: number; className?: stri
       <path d="M50 20 L50 58" stroke="url(#mb-lg)" strokeWidth="3.4" opacity="0.4" />
       <circle cx="32" cy="40" r="3.4" fill="url(#mb-lg)" />
       <circle cx="68" cy="40" r="3.4" fill="url(#mb-lg)" />
-      <path d="M22 66 Q50 78 78 66" stroke="url(#mb-lg)" strokeWidth="4.2" fill="none" opacity="0.5" />
-      <path d="M28 74 Q50 84 72 74" stroke="url(#mb-lg)" strokeWidth="3.4" fill="none" opacity="0.3" />
+      <path
+        d="M22 66 Q50 78 78 66"
+        stroke="url(#mb-lg)"
+        strokeWidth="4.2"
+        fill="none"
+        opacity="0.5"
+      />
+      <path
+        d="M28 74 Q50 84 72 74"
+        stroke="url(#mb-lg)"
+        strokeWidth="3.4"
+        fill="none"
+        opacity="0.3"
+      />
     </svg>
   );
 }
