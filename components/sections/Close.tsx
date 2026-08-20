@@ -90,6 +90,9 @@ export function Close() {
               You pay once for the only remote box the other computer can’t see. Commercial KVMs
               cost this much or more, then bill you every month.
             </p>
+            <p className="mt-4 max-w-md text-sm leading-relaxed text-ink-faint">
+              Sold for a computer you own, or one you are authorised to manage.
+            </p>
           </div>
 
           <div className="grid gap-8 sm:grid-cols-1">

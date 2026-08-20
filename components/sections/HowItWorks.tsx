@@ -4,17 +4,22 @@ const steps = [
   {
     n: "1",
     title: "Plug in two cables.",
-    body: "One carries the other computer’s screen into the box. One makes the box act as its keyboard and mouse.",
+    body: "One carries the other computer’s screen into the box. One makes the box act as its keyboard and mouse. Then power it on.",
   },
   {
     n: "2",
+    title: "Point your phone at it.",
+    body: "The first time it starts, the box makes its own WiFi network. Join it from your phone, pick your home WiFi, and it remembers it forever.",
+  },
+  {
+    n: "3",
     title: "It puts on a disguise.",
     body: "It looks like an ordinary wireless mouse and keyboard, plus a plain monitor. The computer sees nothing odd.",
   },
   {
-    n: "3",
+    n: "4",
     title: "Open one web page.",
-    body: "On your own laptop, same WiFi, nothing to install. Move your mouse and its cursor moves. Type and it types.",
+    body: "The setup screen hands you your box’s address. Open it from your own laptop, set your password, and you are in. Move your mouse and its cursor moves. Type and it types.",
   },
 ];
 
@@ -27,12 +32,12 @@ export function HowItWorks() {
         data-kinetic
         className="mt-8 max-w-3xl font-display text-[clamp(2rem,5vw,3.5rem)] font-bold leading-[1.05] tracking-tight"
       >
-        Three steps. Then you’re in.
+        Four steps. Then you’re in.
       </h2>
 
       <div
         data-reveal="stagger"
-        className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-line bg-line md:grid-cols-3"
+        className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4"
       >
         {steps.map((s) => (
           <div key={s.n} className="u-card flex flex-col bg-stage p-9">

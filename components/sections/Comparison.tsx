@@ -118,7 +118,12 @@ export function Comparison() {
           </table>
         </div>
 
-        <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[11px] uppercase tracking-widest text-ink-faint">
+        <p className="mt-8 max-w-3xl text-sm leading-relaxed text-ink-faint">
+          Compared against publicly listed features as of August 2026. Products change, so check the
+          maker’s own page before you decide.
+        </p>
+
+        <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[11px] uppercase tracking-widest text-ink-faint">
           <span>
             <span className="text-ink">✓</span> yes
           </span>

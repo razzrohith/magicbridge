@@ -31,6 +31,11 @@ export function Hero() {
           any browser in your house, and that computer can’t tell anything is there.
         </p>
 
+        <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-ink-faint">
+          For a second computer you own, or one you are authorised to manage. Not for watching
+          someone else’s.
+        </p>
+
         <div className="mt-11 flex flex-wrap items-center gap-5">
           <a
             href="#price"

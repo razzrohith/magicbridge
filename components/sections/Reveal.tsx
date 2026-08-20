@@ -10,16 +10,16 @@ const seen = [
 const truth = [
   "A full remote-control box, hidden in plain sight",
   "It records the screen",
-  "A disguised network identity",
-  "Logs that vanish, plus an encrypted vault",
+  "Blends in with the other devices on your network",
+  "Keeps no history of your sessions",
 ];
 
 const chips = [
-  "Fake USB ID",
-  "Fake monitor ID",
-  "Disguised on the network",
-  "No logs left behind",
-  "Human-like typing",
+  "Introduces itself as an ordinary mouse and keyboard",
+  "Introduces itself as an ordinary monitor",
+  "Blends in with the other devices on your network",
+  "Keeps no history of your sessions",
+  "Types the way a person types",
 ];
 
 /**

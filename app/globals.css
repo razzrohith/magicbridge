@@ -243,3 +243,80 @@ html.lenis body {
 .lenis.lenis-stopped {
   overflow: clip;
 }
+
+/* ---- Content pages (setup, FAQ) ----
+   Plain reading typography. Deliberately unlike the landing page: someone here
+   is trying to finish a task, not be impressed. */
+.prose-mb h2 {
+  margin-top: 3rem;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+.prose-mb h2:first-child {
+  margin-top: 0;
+}
+.prose-mb h3 {
+  margin-top: 2.25rem;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+.prose-mb p {
+  margin-top: 1rem;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--color-ink-dim);
+}
+.prose-mb ul {
+  margin-top: 1rem;
+  padding-left: 0;
+  list-style: none;
+}
+.prose-mb ul li {
+  position: relative;
+  margin-top: 0.6rem;
+  padding-left: 1.4rem;
+  line-height: 1.7;
+  color: var(--color-ink-dim);
+}
+.prose-mb ul li::before {
+  content: "";
+  position: absolute;
+  top: 0.72em;
+  left: 0.3rem;
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--color-cyan);
+}
+.prose-mb strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+.prose-mb .step {
+  margin-top: 2.5rem;
+  border-left: 1px solid var(--color-line);
+  padding-left: 1.5rem;
+}
+.prose-mb .step-n {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--color-cyan) 75%, transparent);
+}
+.prose-mb .note {
+  margin-top: 2.5rem;
+  border: 1px solid var(--color-line);
+  border-radius: 0.9rem;
+  background: var(--color-stage-2);
+  padding: 1.25rem 1.4rem;
+}
+.prose-mb .note p {
+  margin-top: 0;
+  font-size: 0.95rem;
+}
