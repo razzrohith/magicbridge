@@ -38,7 +38,7 @@ export function Hero() {
 
         <div className="mt-11 flex flex-wrap items-center gap-5">
           <a
-            href="#price"
+            href="/order"
             className="u-press rounded-full bg-cyan px-7 py-3 font-mono text-xs font-medium uppercase tracking-widest text-stage"
           >
             $549 · once

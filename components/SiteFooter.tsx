@@ -20,20 +20,34 @@ export function SiteFooter() {
           </p>
         </div>
 
-        <nav aria-label="Footer" className="flex flex-col gap-3">
-          <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-ink-faint">
-            Help
-          </span>
-          <Link href="/setup" className="u-link text-sm text-ink-dim">
-            Setup guide
-          </Link>
-          <Link href="/faq" className="u-link text-sm text-ink-dim">
-            FAQ
-          </Link>
-          <Link href="/#price" className="u-link text-sm text-ink-dim">
-            Pricing
-          </Link>
-        </nav>
+        <div className="flex gap-14">
+          <nav aria-label="Help" className="flex flex-col gap-3">
+            <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-ink-faint">
+              Help
+            </span>
+            <Link href="/setup" className="u-link text-sm text-ink-dim">
+              Setup guide
+            </Link>
+            <Link href="/faq" className="u-link text-sm text-ink-dim">
+              FAQ
+            </Link>
+            <Link href="/contact" className="u-link text-sm text-ink-dim">
+              Contact
+            </Link>
+          </nav>
+
+          <nav aria-label="Buy" className="flex flex-col gap-3">
+            <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-ink-faint">
+              Buy
+            </span>
+            <Link href="/order" className="u-link text-sm text-ink-dim">
+              Reserve one
+            </Link>
+            <Link href="/#price" className="u-link text-sm text-ink-dim">
+              Pricing
+            </Link>
+          </nav>
+        </div>
       </div>
     </footer>
   );

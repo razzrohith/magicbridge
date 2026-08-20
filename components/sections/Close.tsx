@@ -34,7 +34,7 @@ const pricePoints = [
   },
   {
     title: "Full support.",
-    body: "I help you set it up and keep it running. You’re not on your own.",
+    body: "I help you set it up and keep it running. One person builds and supports this, so you reach me directly.",
   },
   {
     title: "No lock-in.",
@@ -81,7 +81,7 @@ export function Close() {
               <span className="ml-3 align-top text-2xl font-medium text-ink-dim">once</span>
             </p>
             <a
-              href="#price"
+              href="/order"
               className="u-press mt-10 inline-block rounded-full bg-cyan px-8 py-3.5 font-mono text-xs font-medium uppercase tracking-widest text-stage"
             >
               Get MagicBridge

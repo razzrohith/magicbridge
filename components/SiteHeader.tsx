@@ -23,7 +23,7 @@ export function SiteHeader() {
           FAQ
         </Link>
         <Link
-          href="/#price"
+          href="/order"
           className="u-ghost rounded-full border border-line px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-ink-dim"
         >
           $549 · once
