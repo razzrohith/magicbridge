@@ -9,15 +9,22 @@ import { scroll } from "@/lib/scrollStore";
 /**
  * The real MagicBridge, from the v7.8 case design that is actually printed.
  *
- * SEALED ON PURPOSE. The source model ships a fully modelled PiBoard node; it
- * is stripped out of public/models/magicbridge.glb at asset-prep time rather
- * than merely hidden here, because a GLB served to a browser is a downloadable
- * file that anyone can open in a glTF viewer. The site never shows, names, or
- * ships the internals: the product's whole promise is that the box is sealed.
+ * SEALED ON PURPOSE. The source model ships a fully modelled board, a fan and a
+ * baked lid-open clip; all three are stripped out of
+ * public/models/magicbridge.glb at asset-prep time rather than merely hidden
+ * here, because a GLB served to a browser is a downloadable file anyone can
+ * open in a glTF viewer. Hiding internals at runtime would still ship them. The
+ * site never shows, names, or ships what is inside: the product's whole promise
+ * is that the box is sealed.
  *
  * The Reveal beat therefore does NOT open the lid. It turns the device to face
  * the camera and brings the status window up, which is the on-message payoff
  * anyway: what the other computer meets is a monitor cable and a keyboard.
+ *
+ * Loading: the file is meshopt-compressed with quantized attributes and WebP
+ * textures. drei wires the meshopt decoder by default; Draco is switched off
+ * because the model does not use it and enabling it would point a DRACOLoader
+ * at a Google CDN (rule 9, self-host everything).
  */
 const MODEL = "/models/magicbridge.glb";
 
@@ -25,8 +32,12 @@ const MODEL = "/models/magicbridge.glb";
 // the device reads about 3 wide, so bring it down to roughly that.
 const MM_TO_SCENE = 0.016;
 
+// Matched by material, not by node name: the mesh optimiser is free to wrap a
+// part in an extra transform node, which would break a name lookup silently.
+const OLED_MATERIAL = "OledGlowMat";
+
 export function Device() {
-  const { scene } = useGLTF(MODEL);
+  const { scene } = useGLTF(MODEL, false);
   const oledMat = useRef<MeshStandardMaterial | null>(null);
   const clk = useRef(0);
   const group = useRef<Group>(null);
@@ -40,14 +51,23 @@ export function Device() {
       if (!mesh.isMesh) return;
       mesh.castShadow = true;
       mesh.receiveShadow = true;
-      if (o.name === "OledGlow") {
-        const m = (mesh.material as MeshStandardMaterial).clone();
+      const mat = mesh.material as MeshStandardMaterial;
+      if (mat?.name === OLED_MATERIAL) {
+        const m = mat.clone();
         mesh.material = m;
         oledMat.current = m;
       }
     });
     return root;
   }, [scene]);
+
+  // The clone above is ours, so it is ours to release.
+  useEffect(() => {
+    return () => {
+      oledMat.current?.dispose();
+      oledMat.current = null;
+    };
+  }, []);
 
   useFrame((_, delta) => {
     clk.current += Math.min(delta, 0.05);
@@ -74,4 +94,4 @@ export function Device() {
   );
 }
 
-useGLTF.preload(MODEL);
+useGLTF.preload(MODEL, false);

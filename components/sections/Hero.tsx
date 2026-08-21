@@ -1,3 +1,5 @@
+import { DeviceHint } from "@/components/DeviceHint";
+
 /**
  * Beat 1 : the device in the void.
  * LCP is this real-DOM headline (rule 7). The 3D device renders full-bleed
@@ -50,6 +52,12 @@ export function Hero() {
             See how it works
             <span className="inline-block transition-transform group-hover:translate-y-0.5">↓</span>
           </a>
+
+          {/* Sits on the CTA row rather than in the caption bar at the bottom of
+              the section: the hero column already fills the viewport, so
+              anything on a new line below this falls under the fold and the
+              affordance would never be seen. Hidden unless the live 3D mounted. */}
+          <DeviceHint />
         </div>
       </div>
 
@@ -58,15 +66,41 @@ export function Hero() {
           empty column where the device should be. CSS-gated on .stage3d so it
           costs no JS and never double-renders alongside the canvas. */}
       <div className="hero-fallback mx-auto mt-14 w-full max-w-2xl">
+        {/* Two crops of the same shot. A phone showing the 21:9 frame renders
+            the device postage-stamp small, so small screens get a tighter 4:3
+            crop instead. width/height on each <source> so swapping aspect
+            ratios still reserves the right box (rule 7 CLS). */}
         <picture>
-          <source srcSet="/hero-device.webp" type="image/webp" />
+          <source
+            media="(min-width: 640px)"
+            srcSet="/hero-device.webp"
+            type="image/webp"
+            width={1600}
+            height={686}
+          />
+          <source
+            media="(min-width: 640px)"
+            srcSet="/hero-device.jpg"
+            type="image/jpeg"
+            width={1600}
+            height={686}
+          />
+          <source srcSet="/hero-device-mobile.webp" type="image/webp" width={1200} height={900} />
           <img
-            src="/hero-device.jpg"
-            width={1400}
-            height={875}
-            alt="The MagicBridge device: a small sealed box with a lit status window and labelled ports."
+            src="/hero-device-mobile.jpg"
+            width={1200}
+            height={900}
+            alt="The MagicBridge device: a small sealed box with an engraved lid, a lit status window showing its address, and labelled ports along one side."
             className="h-auto w-full"
+            // Eager and high priority, NOT lazy. Measured on the built site:
+            // wherever the 3D does not mount, this image is the LCP element
+            // (390x844 and 768x1024 both resolve LCP to it), so deprioritising
+            // it is deprioritising the largest paint on every phone. It costs
+            // one wasted ~12 KB request on desktops that do run the 3D, where
+            // the block is display:none, and that is the cheaper side of the
+            // trade by a wide margin.
             loading="eager"
+            fetchPriority="high"
             decoding="async"
           />
         </picture>

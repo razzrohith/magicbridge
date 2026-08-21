@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { canRun3D, isFinePointer } from "@/lib/motion";
 import { requestRender, scroll } from "@/lib/scrollStore";
+import { useDeviceDrag } from "./useDeviceDrag";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -55,6 +56,10 @@ export function Scene() {
     let lastX = 0;
     let lastY = 0;
     const onMove = (e: PointerEvent) => {
+      // Freeze parallax while the visitor is turning the device by hand,
+      // otherwise the same pointer movement drives two things at once and the
+      // device appears to fight the drag.
+      if (scroll.dragging) return;
       const nx = (e.clientX / window.innerWidth) * 2 - 1;
       const ny = (e.clientY / window.innerHeight) * 2 - 1;
       scroll.pointerX = nx;
@@ -68,6 +73,19 @@ export function Scene() {
     window.addEventListener("pointermove", onMove, { passive: true });
     return () => window.removeEventListener("pointermove", onMove);
   }, [enabled]);
+
+  // Grab-and-spin: hit-tests the device's published screen bounds so the
+  // visitor can take hold of it and turn it. Desktop-only by construction,
+  // since `enabled` already requires a fine pointer and no reduced-motion.
+  useDeviceDrag(enabled);
+
+  // Dev-only handle on the store, so the interaction can be asserted from a
+  // headless browser instead of eyeballed. `process.env.NODE_ENV` is inlined at
+  // build time, so this whole block is dropped from the production bundle.
+  useEffect(() => {
+    if (process.env.NODE_ENV === "production") return;
+    (window as unknown as { __mb?: typeof scroll }).__mb = scroll;
+  }, []);
 
   // Scroll beats -> store. Hero recede drives the device into the void.
   useGSAP(

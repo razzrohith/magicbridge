@@ -5,8 +5,8 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Bloom, ChromaticAberration, EffectComposer, Vignette } from "@react-three/postprocessing";
 import { easing } from "maath";
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { Group } from "three";
-import { Vector2 } from "three";
+import type { Group, PerspectiveCamera } from "three";
+import { Vector2, Vector3 } from "three";
 import { scroll, setInvalidate } from "@/lib/scrollStore";
 import { DataStream } from "./DataStream";
 import { Device } from "./Device";
@@ -51,6 +51,23 @@ function ContextGuard({ onRestore }: { onRestore: () => void }) {
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
+/** How fast a flick bleeds off, per second. Higher stops sooner. */
+const SPIN_FRICTION = 2.6;
+/** Grab radius in scene units. The device's true bounding sphere is ~1.22, but
+ *  that circle swallows a lot of empty corner space and would reach into the
+ *  headline; this hugs the body so the target feels like the object. */
+const DEVICE_RADIUS = 1.0;
+/** Where the device actually sits inside the Rig group. Device.tsx offsets its
+ *  own group by -0.5 and the model's origin is at its base, so its visual
+ *  centre is a little under the group origin. */
+const DEVICE_OFFSET = new Vector3(0, -0.2, 0);
+
+// Module-scope scratch: allocating vectors inside useFrame would churn the GC
+// at 60-144Hz.
+const WORLD = new Vector3();
+const NDC = new Vector3();
+const TARGET_POS: [number, number, number] = [0, 0, 0];
+
 /**
  * Camera choreography. The camera itself moves between beats (hero: off to the
  * side and high; reveal: pushed in and level with the device), which reads as a
@@ -90,6 +107,11 @@ function CameraRig() {
 function Rig() {
   const group = useRef<Group>(null);
   const invalidate = useThree((s) => s.invalidate);
+  const camera = useThree((s) => s.camera);
+  const size = useThree((s) => s.size);
+  // Our own unwrapped rotation state (see the damp call below for why).
+  // Per-instance, not module scope, so a second Rig would not share it.
+  const rot = useRef({ x: 0, y: 0 });
 
   useFrame((state, delta) => {
     const g = group.current;
@@ -97,6 +119,15 @@ function Rig() {
     const ho = scroll.heroOut;
     const rv = scroll.reveal;
     const t = state.clock.elapsedTime;
+    const d = Math.min(delta, 0.05);
+
+    // Momentum after the visitor lets go. Decayed against real elapsed time,
+    // not per frame, so it coasts the same distance on 60Hz and 144Hz (rule 6).
+    if (!scroll.dragging && scroll.spinVel !== 0) {
+      scroll.userYaw += scroll.spinVel * d;
+      scroll.spinVel *= Math.exp(-d * SPIN_FRICTION);
+      if (Math.abs(scroll.spinVel) < 0.004) scroll.spinVel = 0;
+    }
 
     // Idle float fades out as the device leaves the stage, so once it is parked
     // the target is STATIC and damping can converge (settled=true). Without this
@@ -116,25 +147,63 @@ function Rig() {
     ry = lerp(ry, 0.32, rv);
     rx = lerp(rx, 0.06, rv);
 
-    const targetPos: [number, number, number] = [
-      tx + scroll.pointerX * 0.18,
-      ty - scroll.pointerY * 0.14,
-      tz,
-    ];
-    const targetRot: [number, number, number] = [
-      rx - scroll.pointerY * 0.1,
-      ry + scroll.pointerX * 0.22,
-      0,
-    ];
+    // Reused, not reallocated: this runs up to 144 times a second.
+    TARGET_POS[0] = tx + scroll.pointerX * 0.18;
+    TARGET_POS[1] = ty - scroll.pointerY * 0.14;
+    TARGET_POS[2] = tz;
 
-    easing.damp3(g.position, targetPos, 0.4, delta);
-    easing.dampE(g.rotation, targetRot, 0.45, delta);
+    // The visitor's own rotation rides ON TOP of the scroll pose, so the beats
+    // keep playing underneath whatever angle they parked it at.
+    const targetRx = rx - scroll.pointerY * 0.1 + scroll.userPitch;
+    const targetRy = ry + scroll.pointerX * 0.22 + scroll.userYaw;
+
+    // While a hand is on it, follow the pointer almost rigidly: a 0.45s damp
+    // makes a drag feel like it is dragging something through treacle.
+    const rotSmooth = scroll.dragging ? 0.08 : 0.45;
+
+    easing.damp3(g.position, TARGET_POS, 0.4, delta);
+
+    // Damped as plain scalars we own, NOT with dampE. userYaw is unbounded (the
+    // device can be spun any number of turns) and an Euler wraps into
+    // [-pi, pi], so dampE would take the shortest path: the device would
+    // silently drop a whole turn, and worse, the settled test below could never
+    // be true again because it would compare a wrapped angle to an unwrapped
+    // one, pinning the on-demand loop awake for the rest of the session.
+    easing.damp(rot.current, "x", targetRx, rotSmooth, delta);
+    easing.damp(rot.current, "y", targetRy, rotSmooth, delta);
+    g.rotation.set(rot.current.x, rot.current.y, 0);
+
+    // Publish where the device landed on screen so the DOM can hit-test it.
+    // The canvas is pointer-events:none, so a pointer never reaches three's
+    // raycaster; the scene has to hand its bounds out instead.
+    // DEVICE_OFFSET, not the group origin: Device sits half a unit below its
+    // parent, so projecting the origin would put the grab circle above the box.
+    g.updateWorldMatrix(true, false);
+    WORLD.copy(DEVICE_OFFSET).applyMatrix4(g.matrixWorld);
+    camera.updateMatrixWorld();
+    NDC.copy(WORLD).project(camera);
+    const cam = camera as PerspectiveCamera;
+    const dist = camera.position.distanceTo(WORLD);
+    const halfH = Math.tan(((cam.fov ?? 38) * Math.PI) / 360) * dist;
+    // NDC z past 1 means it is behind the camera, where x/y flip and a hit test
+    // would fire on the opposite side of the screen.
+    if (NDC.z > 1 || halfH <= 0) {
+      scroll.deviceR = 0;
+    } else {
+      scroll.deviceX = (NDC.x * 0.5 + 0.5) * size.width;
+      scroll.deviceY = (-NDC.y * 0.5 + 0.5) * size.height;
+      scroll.deviceR = (DEVICE_RADIUS / halfH) * (size.height / 2);
+    }
 
     // Keep the loop alive while the device is on-stage or still settling.
     const settled =
-      Math.abs(g.position.x - targetPos[0]) < 0.001 &&
-      Math.abs(g.position.y - targetPos[1]) < 0.001;
-    if (ho < 0.92 || rv > 0.02 || !settled) invalidate();
+      Math.abs(g.position.x - TARGET_POS[0]) < 0.001 &&
+      Math.abs(g.position.y - TARGET_POS[1]) < 0.001 &&
+      Math.abs(rot.current.y - targetRy) < 0.001 &&
+      Math.abs(rot.current.x - targetRx) < 0.001;
+    if (ho < 0.92 || rv > 0.02 || scroll.dragging || scroll.spinVel !== 0 || !settled) {
+      invalidate();
+    }
   });
 
   return (
@@ -151,7 +220,7 @@ function Lighting() {
       <directionalLight position={[-4, 5, 4]} intensity={0.55} castShadow />
       <pointLight position={[3, -1.2, 2.6]} intensity={7} distance={12} color="#12c6e6" />
       {/* Baked once (frames={1}); static Lightformer studio rig, no CDN (rule 9). */}
-      <Environment resolution={256} frames={1} environmentIntensity={0.5}>
+      <Environment resolution={256} frames={1} environmentIntensity={0.72}>
         <color attach="background" args={["#05060a"]} />
         <Lightformer
           form="rect"

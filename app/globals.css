@@ -235,6 +235,58 @@ html.stage3d .hero-fallback {
   display: none;
 }
 
+/* ---- Grab-and-spin ----
+   The canvas is pointer-events:none, so the cursor cannot come from hovering
+   the mesh. The scene publishes the device's screen circle instead and the
+   drag listener toggles these classes on <html> when the pointer is inside it. */
+html.device-grab,
+html.device-grab body {
+  cursor: grab;
+}
+html.device-grabbing,
+html.device-grabbing body {
+  cursor: grabbing;
+  user-select: none;
+}
+/* During a drag the pointer travels over links and headings that carry their
+   own cursor. Rather than overriding every element, a transparent sheet is laid
+   over the page for exactly as long as the button is held, and it carries the
+   grabbing cursor. The drag holds pointer capture, so this never interrupts it. */
+html.device-grabbing::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  cursor: grabbing;
+}
+
+/* The affordance. Hidden entirely without live 3D (phones, reduced motion,
+   no WebGL2) because there would be nothing to turn. */
+.device-hint {
+  display: none;
+  transition:
+    opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+html.stage3d .device-hint {
+  display: inline-flex;
+}
+/* Once they have turned it with the pointer, the instruction has done its job.
+   `visibility` (not opacity alone) so it also leaves the tab order: a control
+   faded to zero is still focusable, and tabbing to something invisible is a
+   trap. The delay lets the fade finish first. `:not(:focus)` keeps it on screen
+   for anyone driving it from the keyboard, who needs it to stay put. */
+html.device-spun .device-hint:not(:focus) {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 0.5s;
+}
+
 /* Lenis: it sets html.lenis; keep native scrollbars sane. */
 html.lenis,
 html.lenis body {
