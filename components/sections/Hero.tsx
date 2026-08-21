@@ -53,6 +53,25 @@ export function Hero() {
         </div>
       </div>
 
+      {/* Product shot for everyone who does NOT get the live 3D: phones,
+          reduced-motion, and machines without WebGL2. Before this they saw an
+          empty column where the device should be. CSS-gated on .stage3d so it
+          costs no JS and never double-renders alongside the canvas. */}
+      <div className="hero-fallback mx-auto mt-14 w-full max-w-2xl">
+        <picture>
+          <source srcSet="/hero-device.webp" type="image/webp" />
+          <img
+            src="/hero-device.jpg"
+            width={1400}
+            height={875}
+            alt="The MagicBridge device: a small sealed box with a lit status window and labelled ports."
+            className="h-auto w-full"
+            loading="eager"
+            decoding="async"
+          />
+        </picture>
+      </div>
+
       {/* Honesty caption for the 3D render (tone/safety rule). */}
       <div className="pointer-events-none absolute inset-x-0 bottom-8 mx-auto flex max-w-6xl items-end justify-between px-8 sm:px-14">
         <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-ink-faint">

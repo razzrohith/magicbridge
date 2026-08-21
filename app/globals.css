@@ -229,6 +229,12 @@ html:not(.stage3d) .reveal-stage {
   min-height: 55svh;
 }
 
+/* The still product shot is the stand-in for the live device. Exactly one of
+   the two is ever on screen. */
+html.stage3d .hero-fallback {
+  display: none;
+}
+
 /* Lenis: it sets html.lenis; keep native scrollbars sane. */
 html.lenis,
 html.lenis body {

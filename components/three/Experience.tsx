@@ -66,7 +66,7 @@ function CameraRig() {
     // hero -> receding, then the reveal pulls the camera in close
     const baseZ = lerp(6.5, 7.4, ho);
     const z = lerp(baseZ, 5.9, rv);
-    const y = lerp(lerp(0.35, 1.1, ho), 1.85, rv);
+    const y = lerp(lerp(1.15, 2.0, ho), 2.1, rv);
     const x = lerp(lerp(-0.5, -0.1, ho), 0, rv);
 
     easing.damp3(
@@ -147,34 +147,34 @@ function Rig() {
 function Lighting() {
   return (
     <>
-      <ambientLight intensity={0.14} />
-      <directionalLight position={[-4, 5, 4]} intensity={1.1} />
-      <pointLight position={[3, -1.2, 2.6]} intensity={14} distance={12} color="#12c6e6" />
+      <ambientLight intensity={0.08} />
+      <directionalLight position={[-4, 5, 4]} intensity={0.55} castShadow />
+      <pointLight position={[3, -1.2, 2.6]} intensity={7} distance={12} color="#12c6e6" />
       {/* Baked once (frames={1}); static Lightformer studio rig, no CDN (rule 9). */}
-      <Environment resolution={256} frames={1}>
+      <Environment resolution={256} frames={1} environmentIntensity={0.5}>
         <color attach="background" args={["#05060a"]} />
         <Lightformer
           form="rect"
-          intensity={2.2}
+          intensity={0.85}
           position={[-3, 3, 3]}
           scale={[7, 7, 1]}
           color="#ffffff"
         />
         <Lightformer
           form="rect"
-          intensity={1.7}
+          intensity={0.7}
           position={[4, 1, -3]}
           scale={[6, 6, 1]}
           color="#8beefc"
         />
         <Lightformer
           form="circle"
-          intensity={0.9}
+          intensity={0.35}
           position={[0, -3, 2]}
           scale={5}
           color="#2b3a55"
         />
-        <Lightformer form="ring" intensity={1.2} position={[2, 2, 1]} scale={2} color="#12c6e6" />
+        <Lightformer form="ring" intensity={0.6} position={[2, 2, 1]} scale={2} color="#12c6e6" />
       </Environment>
     </>
   );
