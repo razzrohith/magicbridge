@@ -22,7 +22,7 @@ export function SiteFooter() {
 
         <div className="flex gap-14">
           <nav aria-label="Help" className="flex flex-col gap-3">
-            <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-ink-faint">
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-faint sm:text-[11px] sm:tracking-[0.3em]">
               Help
             </span>
             <Link href="/setup" className="u-link text-sm text-ink-dim">
@@ -37,14 +37,14 @@ export function SiteFooter() {
           </nav>
 
           <nav aria-label="Buy" className="flex flex-col gap-3">
-            <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-ink-faint">
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-faint sm:text-[11px] sm:tracking-[0.3em]">
               Buy
             </span>
             <Link href="/order" className="u-link text-sm text-ink-dim">
               Reserve one
             </Link>
             <Link href="/#price" className="u-link text-sm text-ink-dim">
-              Pricing
+              What you get
             </Link>
           </nav>
         </div>

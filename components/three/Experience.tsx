@@ -51,6 +51,14 @@ function ContextGuard({ onRestore }: { onRestore: () => void }) {
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
+/**
+ * Small-screen tier. Phones now get the live device rather than a still, so the
+ * cost has to come down to meet them: no chromatic aberration, no MSAA, a lower
+ * pixel ratio, a smaller baked environment and a different framing. Matches
+ * isSmallStage() in lib/motion.ts and the `md` breakpoint in the markup.
+ */
+const SMALL = 768;
+
 /** How fast a flick bleeds off, per second. Higher stops sooner. */
 const SPIN_FRICTION = 2.6;
 /** Grab radius in scene units. The device's true bounding sphere is ~1.22, but
@@ -76,15 +84,37 @@ const TARGET_POS: [number, number, number] = [0, 0, 0];
  */
 function CameraRig() {
   const camera = useThree((s) => s.camera);
+  const width = useThree((s) => s.size.width);
   useFrame((_, delta) => {
     const ho = scroll.heroOut;
     const rv = scroll.reveal;
+    const small = width < SMALL;
 
     // hero -> receding, then the reveal pulls the camera in close
     const baseZ = lerp(6.5, 7.4, ho);
-    const z = lerp(baseZ, 5.9, rv);
-    const y = lerp(lerp(1.15, 2.0, ho), 2.1, rv);
-    const x = lerp(lerp(-0.5, -0.1, ho), 0, rv);
+    let z = lerp(baseZ, 5.9, rv);
+    let y = lerp(lerp(1.15, 2.0, ho), 2.1, rv);
+    let x = lerp(lerp(-0.5, -0.1, ho), 0, rv);
+    let lookY = lerp(0.05, 0.7, rv);
+
+    if (small) {
+      // Portrait needs its own shot, not the desktop one squeezed.
+      //  - back off: the same vertical fov gives a much narrower HORIZONTAL
+      //    field on a tall viewport, so the device otherwise runs past both
+      //    edges of the screen
+      //  - straight on: the off-axis desktop framing exists to sit beside a
+      //    headline, and there is no beside here
+      //  - up, and aimed level: the camera used to sit almost exactly at the
+      //    device's own height, which is a raking 1 degree view of a matte
+      //    black box, so it read as a dark smudge. From up here the lit lid
+      //    faces the viewer. Aiming level also puts the horizon on the centre
+      //    line, which keeps the grid floor under the device instead of
+      //    raking up behind the copy.
+      z += 4.0;
+      y = lerp(lerp(2.05, 3.1, ho), 2.35, rv);
+      x = 0;
+      lookY = lerp(y, 1.25, rv);
+    }
 
     easing.damp3(
       camera.position,
@@ -92,7 +122,7 @@ function CameraRig() {
       0.5,
       delta,
     );
-    camera.lookAt(0, lerp(0.05, 0.7, rv), 0);
+    camera.lookAt(0, lookY, 0);
   });
   return null;
 }
@@ -134,15 +164,25 @@ function Rig() {
     // the sin() terms move the target forever and the demand loop never idles.
     const idle = Math.max(0, 1 - ho / 0.92);
 
-    let tx = 1.2 + ho * 0.5;
-    let ty = -0.1 + ho * 5.6 + Math.sin(t * 0.6) * 0.05 * idle;
+    const small = size.width < SMALL;
+
+    // Desktop parks the device to the right of the headline column. Portrait
+    // has no room beside the text, so it sits under it instead, centred, where
+    // the still product shot used to be.
+    let tx = small ? 0 : 1.2 + ho * 0.5;
+    // The exit lift has to clear the frame, and how far that is depends on the
+    // camera. Portrait sits ~4 units further back, which shrinks the same world
+    // offset in screen space: at the desktop lift the device stopped just
+    // inside the top of the viewport and then hung there behind every section
+    // for the rest of the page.
+    let ty = (small ? 0.02 : -0.1) + ho * (small ? 9.2 : 5.6) + Math.sin(t * 0.6) * 0.05 * idle;
     let tz = -ho * 1.5;
-    let ry = 0.52 + ho * 0.5 + Math.sin(t * 0.3) * 0.04 * idle;
+    let ry = (small ? 0.6 : 0.52) + ho * 0.5 + Math.sin(t * 0.3) * 0.04 * idle;
     let rx = -0.12 + Math.sin(t * 0.5) * 0.03 * idle;
 
     // Reveal pose: centre, level, facing us so the dissolve reads clearly.
     tx = lerp(tx, 0, rv);
-    ty = lerp(ty, 0.72, rv);
+    ty = lerp(ty, small ? 1.25 : 0.72, rv);
     tz = lerp(tz, 0.0, rv);
     ry = lerp(ry, 0.32, rv);
     rx = lerp(rx, 0.06, rv);
@@ -213,14 +253,23 @@ function Rig() {
   );
 }
 
-function Lighting() {
+function Lighting({ small }: { small: boolean }) {
   return (
     <>
-      <ambientLight intensity={0.08} />
+      {/* A phone looks at the device head-on and low, so the face turned toward
+          the camera is the one the key light misses. Desktop sees it from above
+          and to the side, where the top and the rim carry the read. Lift the
+          ambient and add a soft front fill rather than blowing out the key. */}
+      <ambientLight intensity={small ? 0.3 : 0.08} />
       <directionalLight position={[-4, 5, 4]} intensity={0.55} castShadow />
+      {small && <directionalLight position={[1.5, 4, 6]} intensity={1.5} />}
       <pointLight position={[3, -1.2, 2.6]} intensity={7} distance={12} color="#12c6e6" />
       {/* Baked once (frames={1}); static Lightformer studio rig, no CDN (rule 9). */}
-      <Environment resolution={256} frames={1} environmentIntensity={0.72}>
+      <Environment
+        resolution={small ? 128 : 256}
+        frames={1}
+        environmentIntensity={small ? 1.35 : 0.72}
+      >
         <color attach="background" args={["#05060a"]} />
         <Lightformer
           form="rect"
@@ -251,9 +300,56 @@ function Lighting() {
 
 const CA_OFFSET = new Vector2(0.0006, 0.0009);
 
+/**
+ * Everything that is priced per pixel lives here so the small-screen tier is
+ * one decision rather than five scattered ones. A phone gets Bloom only, with
+ * no MSAA target and no chromatic aberration: those three are the bulk of the
+ * per-pixel cost, and the vignette is already painted by a CSS gradient over
+ * the whole page anyway.
+ */
+function PostFX({ small }: { small: boolean }) {
+  if (small) {
+    return (
+      <EffectComposer enableNormalPass={false} multisampling={0}>
+        <Bloom intensity={0.6} luminanceThreshold={0.7} luminanceSmoothing={0.25} mipmapBlur />
+      </EffectComposer>
+    );
+  }
+  return (
+    <EffectComposer enableNormalPass={false} multisampling={4}>
+      <Bloom intensity={0.7} luminanceThreshold={0.65} luminanceSmoothing={0.25} mipmapBlur />
+      <Vignette offset={0.3} darkness={0.75} eskil={false} />
+      {/* CA last: a convolution effect in the middle would split the chain into
+          three EffectPasses instead of merging Bloom+Vignette into one. */}
+      <ChromaticAberration offset={CA_OFFSET} radialModulation={false} modulationOffset={0} />
+    </EffectComposer>
+  );
+}
+
+/** Reads the live canvas width so the tier follows an orientation change. */
+function Stage({ glEpoch }: { glEpoch: number }) {
+  const small = useThree((s) => s.size.width) < SMALL;
+  return (
+    <>
+      <fog attach="fog" args={["#050507", 9, 20]} />
+      {/* key remount re-bakes the IBL after a GPU context restore */}
+      <Lighting key={`${glEpoch}-${small}`} small={small} />
+      <CameraRig />
+      <GridFloor small={small} />
+      <Rig />
+      <DataStream />
+      <Dust />
+      <PostFX small={small} />
+    </>
+  );
+}
+
 export function Experience() {
   const [glEpoch, setGlEpoch] = useState(0);
   const onRestore = useCallback(() => setGlEpoch((e) => e + 1), []);
+  // Read once, for the pixel ratio, which the Canvas cannot change later
+  // anyway. The rest of the tier lives inside <Stage> and does react to resize.
+  const smallAtMount = typeof window !== "undefined" && window.innerWidth < SMALL;
 
   return (
     <Canvas
@@ -261,28 +357,18 @@ export function Experience() {
       // Array form so R3F clamps to the real devicePixelRatio. A scalar would
       // supersample 1x displays. PerformanceMonitor is deliberately absent: it
       // samples wall-clock fps and misreads an on-demand loop as a slow GPU.
-      dpr={[1, 1.5]}
-      // AA comes from the composer's MSAA render target, not the (unused) canvas.
+      // Phones report 3x device pixel ratios and would otherwise shade nine
+      // times the fragments of a 1x panel for a screen the size of a hand.
+      dpr={smallAtMount ? [1, 1.6] : [1, 1.5]}
+      // AA comes from the composer's MSAA render target, not the (unused)
+      // canvas, except on the small tier which has no MSAA target: there the
+      // extra device pixels are doing that job instead.
       gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }}
       camera={{ position: [0, 0.35, 6.5], fov: 38 }}
     >
       <InvalidateBridge />
       <ContextGuard onRestore={onRestore} />
-      <fog attach="fog" args={["#050507", 9, 20]} />
-      {/* key remount re-bakes the IBL after a GPU context restore */}
-      <Lighting key={glEpoch} />
-      <CameraRig />
-      <GridFloor />
-      <Rig />
-      <DataStream />
-      <Dust />
-      <EffectComposer enableNormalPass={false} multisampling={4}>
-        <Bloom intensity={0.7} luminanceThreshold={0.65} luminanceSmoothing={0.25} mipmapBlur />
-        <Vignette offset={0.3} darkness={0.75} eskil={false} />
-        {/* CA last: a convolution effect in the middle would split the chain into
-            three EffectPasses instead of merging Bloom+Vignette into one. */}
-        <ChromaticAberration offset={CA_OFFSET} radialModulation={false} modulationOffset={0} />
-      </EffectComposer>
+      <Stage glEpoch={glEpoch} />
     </Canvas>
   );
 }

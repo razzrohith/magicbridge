@@ -26,7 +26,7 @@ const jetbrainsMono = JetBrains_Mono({
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://magicbridge.razzrohith.com";
 
 const DESCRIPTION =
-  "A small box you plug into your other computer to see and control it, live, from any browser in your house, and that computer can’t tell anything is there. $549, one-time. For hardware you own.";
+  "A small box you plug into your other computer to see and control it, live, from any browser in your house, and that computer can’t tell anything is there. One payment, no subscription. For hardware you own.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -100,9 +100,7 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
   // reveal-stage height here keeps the 260vh track out of a post-hydration
   // layout shift; Scene removes the class if WebGL2 turns out to be missing.
   var n=navigator;
-  if(innerWidth>=900
-     && matchMedia('(hover: hover) and (pointer: fine)').matches
-     && !(n.deviceMemory>0&&n.deviceMemory<3)
+  if(!(n.deviceMemory>0&&n.deviceMemory<3)
      && !(n.hardwareConcurrency>0&&n.hardwareConcurrency<4)){
     e.classList.add('stage3d');
   }

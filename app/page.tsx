@@ -24,12 +24,9 @@ const productSchema = {
     "A small box you plug into a second computer to see and control it, live, from any browser in your house, and that computer can’t tell anything is there. For hardware you own.",
   brand: { "@type": "Brand", name: "MagicBridge" },
   category: "KVM-over-IP hardware",
-  offers: {
-    "@type": "Offer",
-    price: "549",
-    priceCurrency: "USD",
-    availability: "https://schema.org/PreOrder",
-  },
+  // No `offers` block. Structured data must not carry a price the page itself
+  // does not show: an Offer with no price is invalid, and one with a stale
+  // price is worse than none.
 };
 
 const jsonLd = JSON.stringify(productSchema);

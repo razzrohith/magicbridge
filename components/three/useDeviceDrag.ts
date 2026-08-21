@@ -27,6 +27,18 @@ const DRAG_SLOP = 3;
 /** Cap the release flick so a violent swipe cannot launch it into a blur. */
 const MAX_FLICK = 9;
 /**
+ * Touch only. A finger on the device is ambiguous until it moves: it could be
+ * the start of a spin or the start of a scroll, and guessing wrong either
+ * freezes the page or spins the box every time someone swipes past it. So a
+ * touch claims the gesture only once it has travelled this far AND is this
+ * much more horizontal than vertical. Nothing is preventDefault-ed on touch,
+ * so a scroll that was never claimed keeps scrolling normally.
+ */
+const TOUCH_CLAIM_PX = 10;
+const TOUCH_CLAIM_RATIO = 1.5;
+/** Vertical travel that settles it the other way: this is a scroll, hands off. */
+const TOUCH_RELEASE_PX = 12;
+/**
  * Floor on the per-move interval when converting travel into a rate. It has to
  * sit below the frame interval of the fastest display we expect (240Hz is
  * ~4.2ms) or the measured rate would be scaled down on high-refresh monitors
@@ -82,6 +94,10 @@ export function useDeviceDrag(enabled: boolean) {
     /** Smoothed yaw rate, rad/sec, handed to the scene as momentum on release. */
     let vel = 0;
     let hovering = false;
+    /** Touch gesture that has not yet declared itself a spin or a scroll. */
+    let pending = false;
+    let startX = 0;
+    let startY = 0;
     /** Last seen pointer position, so hover can be re-checked after a drag. */
     let hoverX = -1;
     let hoverY = -1;
@@ -99,14 +115,22 @@ export function useDeviceDrag(enabled: boolean) {
 
     const onDown = (e: PointerEvent) => {
       if (!e.isPrimary || e.button !== 0) return;
-      // Touch is excluded deliberately. A hybrid touch laptop reports a fine
-      // pointer, so the 3D layer mounts, and without this a finger swipe over
-      // the device would both scroll the page and rotate the box, with
-      // preventDefault fighting the browser's own gesture handling.
-      if (e.pointerType !== "mouse" && e.pointerType !== "pen") return;
       if (!overDevice(e.clientX, e.clientY)) return;
       if ((e.target as Element | null)?.closest?.(INTERACTIVE)) return;
       if (overText(e.clientX, e.clientY)) return;
+
+      // A touch is not a drag yet, only a candidate. onMove decides.
+      if (e.pointerType === "touch") {
+        pending = true;
+        pointerId = e.pointerId;
+        startX = e.clientX;
+        startY = e.clientY;
+        lastX = e.clientX;
+        lastY = e.clientY;
+        lastT = e.timeStamp;
+        vel = 0;
+        return;
+      }
 
       active = true;
       pointerId = e.pointerId;
@@ -132,6 +156,31 @@ export function useDeviceDrag(enabled: boolean) {
     const onMove = (e: PointerEvent) => {
       hoverX = e.clientX;
       hoverY = e.clientY;
+
+      // Touch candidate: wait for the gesture to declare itself.
+      if (pending && e.pointerId === pointerId) {
+        const dx = Math.abs(e.clientX - startX);
+        const dy = Math.abs(e.clientY - startY);
+        if (dy > TOUCH_RELEASE_PX && dy >= dx) {
+          // Clearly a scroll. Let go of it completely.
+          pending = false;
+          pointerId = -1;
+          return;
+        }
+        if (dx > TOUCH_CLAIM_PX && dx > dy * TOUCH_CLAIM_RATIO) {
+          pending = false;
+          active = true;
+          scroll.dragging = true;
+          scroll.spinVel = 0;
+          lastX = e.clientX;
+          lastY = e.clientY;
+          lastT = e.timeStamp;
+          requestRender();
+        } else {
+          return;
+        }
+      }
+
       if (!active) {
         setHover(overDevice(e.clientX, e.clientY));
         return;
@@ -159,6 +208,10 @@ export function useDeviceDrag(enabled: boolean) {
     };
 
     const end = (e?: PointerEvent) => {
+      if (pending && (!e || e.pointerId === pointerId)) {
+        pending = false;
+        pointerId = -1;
+      }
       if (!active) return;
       if (e && e.pointerId !== pointerId) return;
       active = false;

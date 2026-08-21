@@ -33,6 +33,15 @@ jobs:
       - run: pnpm install --frozen-lockfile
       # next.config.ts sets output: "export", so this writes static files to out/
       - run: pnpm build
+        env:
+          # Repository variable, not a secret: NEXT_PUBLIC_* is compiled into
+          # the client bundle, and a form endpoint has to be public anyway
+          # because the visitor's browser is what posts to it. Storing it as a
+          # secret would only hide it from the Actions log, not from the site.
+          # Set it under Settings > Secrets and variables > Actions > Variables
+          # and the reservation and support forms go live on the next deploy;
+          # leave it unset and both pages keep saying so honestly.
+          NEXT_PUBLIC_FORM_ENDPOINT: ${{ vars.NEXT_PUBLIC_FORM_ENDPOINT }}
       # Losing public/CNAME silently drops the custom domain on the next deploy,
       # so fail the build instead of publishing without it.
       - name: Verify custom domain file survived the build

@@ -378,3 +378,21 @@ html.lenis body {
   margin-top: 0;
   font-size: 0.95rem;
 }
+
+/* ---- Hero device stage (phones) ----
+   The canvas is fixed and full-bleed, so the 3D device contributes nothing to
+   the hero column's height. On a phone the copy alone fills the viewport, so
+   this box holds open the strip the device is posed into. Desktop puts the
+   device beside the headline and needs no reserved space. */
+.hero-stage-gap {
+  display: none;
+}
+html.stage3d .hero-stage-gap {
+  display: block;
+  height: clamp(210px, 32svh, 300px);
+}
+@media (min-width: 768px) {
+  html.stage3d .hero-stage-gap {
+    display: none;
+  }
+}

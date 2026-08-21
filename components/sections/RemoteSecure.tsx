@@ -55,10 +55,10 @@ export function RemoteSecure() {
       aria-labelledby="remote-secure-title"
       className="relative z-10 border-y border-line bg-stage-2/30"
     >
-      <div className="mx-auto max-w-6xl px-8 py-28 sm:px-14 sm:py-36">
+      <div className="mx-auto max-w-6xl px-6 py-16 sm:px-14 sm:py-36">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading index="07" label="Remote & protected" />
-          <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-cyan/70">
+          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-cyan/70 sm:text-[11px] sm:tracking-[0.3em]">
             Included, nothing extra to buy
           </span>
         </div>
@@ -66,7 +66,7 @@ export function RemoteSecure() {
         <h2
           id="remote-secure-title"
           data-kinetic
-          className="mt-8 max-w-3xl font-display text-[clamp(2rem,5vw,3.5rem)] font-bold leading-[1.05] tracking-tight"
+          className="mt-8 max-w-3xl font-display text-[clamp(1.6rem,5vw,3.5rem)] font-bold leading-[1.05] tracking-tight"
         >
           Reach it from anywhere.
           <span className="text-ink-dim"> Nobody else can.</span>
@@ -74,9 +74,9 @@ export function RemoteSecure() {
 
         {/* Reach: the private path from you to the box, full width so the
             hop chain reads left to right like the signal it describes. */}
-        <div className="mt-16 grid gap-10 lg:grid-cols-[1fr_1.15fr] lg:items-start lg:gap-16">
+        <div className="mt-10 grid sm:mt-16 gap-10 lg:grid-cols-[1fr_1.15fr] lg:items-start lg:gap-16">
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-cyan/80">
+            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cyan/80 sm:text-[11px] sm:tracking-[0.25em]">
               Built-in remote access
             </p>
             <p data-reveal className="mt-5 text-lg leading-relaxed text-ink-dim">
@@ -105,7 +105,7 @@ export function RemoteSecure() {
 
         {/* Protection: the stack, laid out as a grid so it reads as a wall */}
         <div className="mt-20 border-t border-line pt-14">
-          <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-cyan/80">
+          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cyan/80 sm:text-[11px] sm:tracking-[0.25em]">
             Six layers between it and everyone else
           </p>
           <ol

@@ -11,7 +11,7 @@ import { scroll } from "@/lib/scrollStore";
  * the void reads as a lit stage rather than flat black. Scrolls slowly toward
  * the camera and brightens during the reveal.
  */
-export function GridFloor() {
+export function GridFloor({ small = false }: { small?: boolean }) {
   const matRef = useRef<THREE.ShaderMaterial>(null);
 
   const uniforms = useMemo(
@@ -31,7 +31,11 @@ export function GridFloor() {
     // idle gaps (visible jump on wake) and grows unbounded inside fract().
     clk.current = (clk.current + Math.min(delta, 0.05)) % 1000;
     uniforms.uTime.value = clk.current;
-    uniforms.uIntensity.value = 0.07 + scroll.reveal * 0.1 + (1 - scroll.heroOut) * 0.05;
+    // A portrait camera sits nearly level with the floor, so the grid rakes
+    // up most of the frame and sits directly behind the headline. Half strength
+    // keeps it as a hint of a stage instead of a texture over the copy.
+    const dim = small ? 0.28 : 1;
+    uniforms.uIntensity.value = (0.07 + scroll.reveal * 0.1 + (1 - scroll.heroOut) * 0.05) * dim;
   });
 
   return (

@@ -20,8 +20,8 @@ export default function TermsPage() {
 
       <h2>The product and the price</h2>
       <p>
-        MagicBridge is a physical device sold for $549, paid once. There is no subscription and no
-        recurring charge. Prices are in <Fill>currency</Fill> and{" "}
+        MagicBridge is a physical device sold as a one-time purchase. There is no subscription and
+        no recurring charge. Prices are in <Fill>currency</Fill> and{" "}
         <Fill>state whether tax, VAT or duties are included</Fill>.
       </p>
 

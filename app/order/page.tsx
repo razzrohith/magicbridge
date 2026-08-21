@@ -6,21 +6,21 @@ import { FORMS_ENABLED } from "@/lib/forms";
 export const metadata: Metadata = {
   title: "Reserve a MagicBridge",
   description:
-    "MagicBridge is $549, one time, with no subscription. Join the list and I will contact you when the next batch is ready.",
+    "MagicBridge is a one-time purchase with no subscription. Join the list and I will contact you when the next batch is ready.",
   alternates: { canonical: "/order" },
 };
 
 export default function OrderPage() {
   return (
     <PageShell
-      eyebrow="$549 · once"
+      eyebrow="Reserve"
       title="Reserve a MagicBridge"
       intro="These are built in small batches. Leave your details and I will contact you when the next one is ready, with the price and delivery confirmed before you pay anything."
     >
       <h2>What you are reserving</h2>
       <ul>
         <li>
-          <strong>One MagicBridge box, $549, paid once.</strong> No subscription, ever.
+          <strong>One MagicBridge box, paid once.</strong> No subscription, ever.
         </li>
         <li>
           <strong>Free updates and support.</strong> New features and fixes as they land, and I help

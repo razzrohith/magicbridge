@@ -59,18 +59,58 @@ function Mark({ kind }: { kind: string }) {
 export function Comparison() {
   return (
     <section className="relative z-10 border-y border-line bg-stage-2/40">
-      <div className="mx-auto max-w-6xl px-8 py-28 sm:px-14 sm:py-36">
+      <div className="mx-auto max-w-6xl px-6 py-16 sm:px-14 sm:py-36">
         <SectionHeading index="09" label="Comparison" />
 
         <h2
           data-kinetic
-          className="mt-8 max-w-3xl font-display text-[clamp(2rem,5vw,3.5rem)] font-bold leading-[1.05] tracking-tight"
+          className="mt-8 max-w-3xl font-display text-[clamp(1.6rem,5vw,3.5rem)] font-bold leading-[1.05] tracking-tight"
         >
           Plenty of good boxes.
           <span className="text-ink-dim"> Only one the other computer can’t tell is there.</span>
         </h2>
 
-        <div data-reveal className="mt-14 overflow-x-auto rounded-2xl border border-line">
+        {/* Phones get a stacked card per product instead of the wide table.
+            A six-column grid cannot survive 390px, and the alternative the
+            table was using, a horizontal scroll container, hides half the
+            comparison off-screen behind a gesture nobody is told about. Same
+            data, same source array, read top to bottom. */}
+        <div data-reveal="stagger" className="mt-10 grid gap-4 md:hidden">
+          {rows.map((r) => (
+            <div
+              key={r.name}
+              className={`rounded-2xl border p-5 ${
+                r.highlight ? "border-cyan/30 bg-cyan/[0.04]" : "border-line bg-stage"
+              }`}
+            >
+              <p
+                className={`font-display text-lg font-bold tracking-tight ${
+                  r.highlight ? "text-cyan" : "text-ink"
+                }`}
+              >
+                {r.name}
+              </p>
+              <dl className="mt-4 grid gap-2.5">
+                {r.cells.map((cell, i) => (
+                  <div key={columns[i]} className="flex items-baseline justify-between gap-4">
+                    <dt className="text-[13px] leading-snug text-ink-dim">{columns[i]}</dt>
+                    <dd className="flex shrink-0 items-center gap-2 text-base">
+                      <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-faint">
+                        {MARK_LABEL[cell]}
+                      </span>
+                      <Mark kind={cell} />
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          ))}
+        </div>
+
+        <div
+          data-reveal
+          className="mt-14 hidden overflow-x-auto rounded-2xl border border-line md:block"
+        >
           <table className="w-full min-w-[720px] border-collapse text-left">
             <thead>
               <tr className="border-b border-line">
@@ -123,7 +163,7 @@ export function Comparison() {
           maker’s own page before you decide.
         </p>
 
-        <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[11px] uppercase tracking-widest text-ink-faint">
+        <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 font-mono text-[10px] uppercase tracking-[0.1em] text-ink-faint sm:gap-x-6 sm:text-[11px] sm:tracking-widest">
           <span>
             <span className="text-ink">✓</span> yes
           </span>

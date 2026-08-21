@@ -23,16 +23,26 @@ export function isFinePointer(): boolean {
   return window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 }
 
+/**
+ * Screens where the scene runs a cheaper tier. Matches the CSS breakpoint used
+ * for the mobile layout so the two never disagree about what "small" means.
+ */
+export function isSmallStage(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.innerWidth < 768;
+}
+
 /** Conservative check for whether the immersive 3D layer should mount at all. */
 export function canRun3D(): boolean {
   if (typeof window === "undefined") return false;
   if (prefersReducedMotion()) return false;
-  // Phones get the clean static site (no video fallback exists yet); a full-
-  // screen WebGL canvas behind scrolling content is a mobile perf risk.
-  if (window.innerWidth < 900) return false;
-  // Tablets report >=900px but a coarse pointer; the postprocessing stack is not
-  // worth it there and the static site is the better experience.
-  if (!isFinePointer()) return false;
+  // Phones and tablets DO get the live device. They used to be excluded on the
+  // theory that a full-screen WebGL canvas behind scrolling content is a mobile
+  // perf risk, which left small screens looking like a different, emptier
+  // product. The risk is handled where it belongs instead: isSmallStage() below
+  // drives a lighter tier (no postprocessing, no shadows, smaller pixel ratio,
+  // fewer particles), and the capability floor underneath still turns 3D off on
+  // genuinely weak hardware.
   try {
     const canvas = document.createElement("canvas");
     // three r185 is WebGL2-only, so a WebGL1-only device must fall back.

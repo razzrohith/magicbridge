@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FORM_ENDPOINT } from "@/lib/forms";
+import { deliveryFields, FORM_ENDPOINT, relayAccepted } from "@/lib/forms";
 
 type State = "idle" | "sending" | "sent" | "error";
 
@@ -31,7 +31,12 @@ export function ContactForm({
     e.preventDefault();
     const form = e.currentTarget;
     const data = new FormData(form);
-    data.append("_subject", kind === "waitlist" ? "MagicBridge waitlist" : "MagicBridge support");
+    for (const [k, v] of Object.entries(
+      deliveryFields(kind === "waitlist" ? "MagicBridge reservation" : "MagicBridge support"),
+    )) {
+      data.append(k, v);
+    }
+
     setState("sending");
     try {
       const res = await fetch(FORM_ENDPOINT, {
@@ -39,7 +44,14 @@ export function ContactForm({
         body: data,
         headers: { Accept: "application/json" },
       });
+
+      // A 200 is not proof of delivery: relays answer 200 and say "no" in the
+      // body (an unconfirmed FormSubmit address does exactly this). Telling
+      // someone their message arrived when it did not is the one outcome worth
+      // going out of the way to avoid.
       if (!res.ok) throw new Error(String(res.status));
+      if (!relayAccepted(await res.json().catch(() => null))) throw new Error("relay rejected");
+
       setState("sent");
       form.reset();
     } catch {
@@ -130,7 +142,8 @@ export function ContactForm({
         </button>
         {state === "error" && (
           <p role="alert" className="text-sm text-ink-dim">
-            That did not send. Please try again in a moment.
+            That did not send, and I would rather tell you than lose it. Please try again in a
+            moment.
           </p>
         )}
       </div>

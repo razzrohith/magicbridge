@@ -21,17 +21,17 @@ const points = [
  */
 export function Trust() {
   return (
-    <section className="relative z-10 mx-auto max-w-6xl px-8 py-28 sm:px-14 sm:py-36">
+    <section className="relative z-10 mx-auto max-w-6xl px-6 py-16 sm:px-14 sm:py-36">
       <SectionHeading index="08" label="Trust" />
 
       <h2
         data-kinetic
-        className="mt-8 max-w-3xl font-display text-[clamp(2rem,5vw,3.5rem)] font-bold leading-[1.05] tracking-tight"
+        className="mt-8 max-w-3xl font-display text-[clamp(1.6rem,5vw,3.5rem)] font-bold leading-[1.05] tracking-tight"
       >
         Locked down, and for a computer you own.
       </h2>
 
-      <div data-reveal="stagger" className="mt-16 grid gap-12 md:grid-cols-3">
+      <div data-reveal="stagger" className="mt-10 grid sm:mt-16 gap-12 md:grid-cols-3">
         {points.map((p) => (
           <div key={p.title}>
             <p className="font-display text-xl font-bold tracking-tight">{p.title}</p>

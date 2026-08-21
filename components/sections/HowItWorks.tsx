@@ -25,19 +25,19 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section id="how" className="relative z-10 mx-auto max-w-6xl px-8 py-28 sm:px-14 sm:py-36">
+    <section id="how" className="relative z-10 mx-auto max-w-6xl px-6 py-16 sm:px-14 sm:py-36">
       <SectionHeading index="03" label="How it works" />
 
       <h2
         data-kinetic
-        className="mt-8 max-w-3xl font-display text-[clamp(2rem,5vw,3.5rem)] font-bold leading-[1.05] tracking-tight"
+        className="mt-8 max-w-3xl font-display text-[clamp(1.6rem,5vw,3.5rem)] font-bold leading-[1.05] tracking-tight"
       >
         Four steps. Then you’re in.
       </h2>
 
       <div
         data-reveal="stagger"
-        className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4"
+        className="mt-10 grid sm:mt-16 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4"
       >
         {steps.map((s) => (
           <div key={s.n} className="u-card flex flex-col bg-stage p-9">
@@ -50,7 +50,7 @@ export function HowItWorks() {
 
       <p
         data-reveal
-        className="mt-12 font-mono text-[13px] uppercase tracking-[0.2em] text-ink-faint"
+        className="mt-8 font-mono text-[11px] uppercase leading-relaxed tracking-[0.12em] text-ink-faint sm:mt-12 sm:text-[13px] sm:tracking-[0.2em]"
       >
         No software on the other computer. Nothing for it to detect.
       </p>

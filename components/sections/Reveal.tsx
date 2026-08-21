@@ -36,12 +36,12 @@ export function Reveal() {
       {/* Pinned device stage (sticky only when motion is on; see globals.css) */}
       <div className="reveal-track relative">
         <div
-          className="reveal-stage relative flex min-h-[90svh] flex-col px-8 sm:px-14"
+          className="reveal-stage relative flex min-h-[90svh] flex-col px-6 sm:px-14"
           data-flashlight
         >
           <div className="mx-auto flex w-full max-w-6xl items-center justify-between pt-28">
             <SectionHeading index="02" label="The reveal" />
-            <span className="hidden font-mono text-[11px] uppercase tracking-[0.3em] text-ink-faint sm:inline">
+            <span className="hidden font-mono text-[10px] uppercase tracking-[0.18em] text-ink-faint sm:text-[11px] sm:tracking-[0.3em] sm:inline">
               Product rendering
             </span>
           </div>
@@ -50,13 +50,13 @@ export function Reveal() {
             <div className="mx-auto w-full max-w-4xl pb-28 text-center">
               <p
                 data-reveal
-                className="font-mono text-[11px] uppercase tracking-[0.3em] text-cyan/70"
+                className="font-mono text-[10px] uppercase tracking-[0.18em] text-cyan/70 sm:text-[11px] sm:tracking-[0.3em]"
               >
                 Same box. Two truths.
               </p>
               <p
                 data-kinetic
-                className="mt-6 font-display text-[clamp(1.9rem,4.6vw,3.4rem)] font-bold leading-[1.08] tracking-tight"
+                className="mt-6 font-display text-[clamp(1.55rem,4.6vw,3.4rem)] font-bold leading-[1.08] tracking-tight"
               >
                 To your computer, it’s just a{" "}
                 <span className="text-cyan">monitor and a keyboard.</span>
@@ -67,13 +67,13 @@ export function Reveal() {
       </div>
 
       {/* Narrative: what it sees vs what's really there (static source of truth) */}
-      <div className="reveal-narrative mx-auto max-w-6xl px-8 pb-28 sm:px-14 sm:pb-40">
+      <div className="reveal-narrative mx-auto max-w-6xl px-6 pb-16 sm:px-14 sm:pb-40">
         <div
           data-reveal="stagger"
           className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line lg:grid-cols-2"
         >
-          <div className="bg-stage/80 p-9 backdrop-blur-sm sm:p-11">
-            <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-ink-faint">
+          <div className="bg-stage/80 p-6 backdrop-blur-sm sm:p-11">
+            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-faint sm:text-[11px] sm:tracking-[0.25em]">
               What the target computer sees
             </p>
             <ul className="mt-8 space-y-4">
@@ -86,8 +86,8 @@ export function Reveal() {
             </ul>
           </div>
 
-          <div className="bg-panel/70 p-9 backdrop-blur-sm sm:p-11">
-            <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-cyan/80">
+          <div className="bg-panel/70 p-6 backdrop-blur-sm sm:p-11">
+            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cyan/80 sm:text-[11px] sm:tracking-[0.25em]">
               What’s really there
             </p>
             <ul className="mt-8 space-y-4">

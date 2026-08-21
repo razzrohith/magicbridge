@@ -27,22 +27,22 @@ const values = [
 export function DeepDive() {
   return (
     <section className="relative z-10 border-y border-line bg-stage-2/60">
-      <div className="mx-auto max-w-6xl px-8 py-28 sm:px-14 sm:py-40">
+      <div className="mx-auto max-w-6xl px-6 py-16 sm:px-14 sm:py-40">
         <SectionHeading index="06" label="Specs & speed" />
 
         <h2
           data-kinetic
-          className="mt-8 max-w-3xl font-display text-[clamp(2rem,5vw,3.5rem)] font-bold leading-[1.05] tracking-tight"
+          className="mt-8 max-w-3xl font-display text-[clamp(1.6rem,5vw,3.5rem)] font-bold leading-[1.05] tracking-tight"
         >
           Live video. <span className="text-cyan">Not a slideshow.</span>
         </h2>
 
         <div
           data-reveal="stagger"
-          className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4"
+          className="mt-10 grid sm:mt-16 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4"
         >
           {stats.map((s) => (
-            <div key={s.unit} className="u-card bg-stage p-9">
+            <div key={s.unit} className="u-card bg-stage p-6 sm:p-9">
               <p className="font-display text-4xl font-bold tracking-tight text-ink tabular-nums sm:text-5xl">
                 {s.prefix}
                 <span data-count={s.count}>{s.count}</span>
@@ -59,7 +59,7 @@ export function DeepDive() {
         {/* Signal path */}
         <div
           data-reveal
-          className="mt-12 flex flex-col gap-3 rounded-2xl border border-line bg-stage/70 p-8 font-mono text-[13px] uppercase tracking-[0.15em] text-ink-dim sm:flex-row sm:items-center sm:gap-5"
+          className="mt-12 flex flex-col gap-3 rounded-2xl border border-line bg-stage/70 p-8 font-mono text-[11px] uppercase tracking-[0.1em] sm:text-[13px] sm:tracking-[0.15em] text-ink-dim sm:flex-row sm:items-center sm:gap-5"
         >
           <span>The other computer’s screen</span>
           <span aria-hidden className="text-cyan">
@@ -74,7 +74,10 @@ export function DeepDive() {
           <span>Your browser</span>
         </div>
 
-        <div data-reveal="stagger" className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div
+          data-reveal="stagger"
+          className="mt-10 grid sm:mt-14 gap-8 sm:grid-cols-2 lg:grid-cols-4"
+        >
           {values.map((v) => (
             <div key={v.k}>
               <p className="font-display text-lg font-bold tracking-tight">{v.k}</p>

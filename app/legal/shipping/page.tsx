@@ -19,7 +19,7 @@ export default function ShippingPage() {
 
       <h2>What it costs</h2>
       <p>
-        <Fill>Shipping cost, or state that it is included in the $549</Fill>.
+        <Fill>Shipping cost, or state that it is included in the purchase price</Fill>.
       </p>
 
       <h2>How long it takes</h2>

@@ -44,10 +44,10 @@ export function ControlRoom() {
       aria-labelledby="control-room-title"
       className="relative z-10 border-y border-line bg-stage-2/30"
     >
-      <div className="mx-auto max-w-6xl px-8 py-28 sm:px-14 sm:py-36">
+      <div className="mx-auto max-w-6xl px-6 py-16 sm:px-14 sm:py-36">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading index="05" label="The control room" />
-          <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-cyan/70">
+          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-cyan/70 sm:text-[11px] sm:tracking-[0.3em]">
             Now shipping
           </span>
         </div>
@@ -55,7 +55,7 @@ export function ControlRoom() {
         <h2
           id="control-room-title"
           data-kinetic
-          className="mt-8 max-w-3xl font-display text-[clamp(2rem,5vw,3.5rem)] font-bold leading-[1.05] tracking-tight"
+          className="mt-8 max-w-3xl font-display text-[clamp(1.6rem,5vw,3.5rem)] font-bold leading-[1.05] tracking-tight"
         >
           One page runs the whole thing.
           <span className="text-ink-dim"> Even when you are not watching.</span>
@@ -63,7 +63,7 @@ export function ControlRoom() {
 
         <ul
           data-reveal="stagger"
-          className="mt-16 grid list-none gap-x-12 gap-y-12 p-0 md:grid-cols-2"
+          className="mt-10 grid sm:mt-16 list-none gap-x-12 gap-y-12 p-0 md:grid-cols-2"
         >
           {capabilities.map((c) => (
             <li key={c.title} className="border-l border-line pl-6">

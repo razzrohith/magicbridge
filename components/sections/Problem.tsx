@@ -17,12 +17,12 @@ const problems = [
 
 export function Problem() {
   return (
-    <section className="relative z-10 mx-auto max-w-6xl px-8 py-28 sm:px-14 sm:py-36">
+    <section className="relative z-10 mx-auto max-w-6xl px-6 py-16 sm:px-14 sm:py-36">
       <SectionHeading index="01" label="The problem" />
 
       <h2
         data-kinetic
-        className="mt-8 max-w-3xl font-display text-[clamp(2rem,5vw,3.5rem)] font-bold leading-[1.05] tracking-tight"
+        className="mt-8 max-w-3xl font-display text-[clamp(1.6rem,5vw,3.5rem)] font-bold leading-[1.05] tracking-tight"
       >
         Reaching a second computer is
         <span className="text-ink-dim"> harder than it should be.</span>
@@ -30,10 +30,10 @@ export function Problem() {
 
       <div
         data-reveal="stagger"
-        className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-3"
+        className="mt-10 grid sm:mt-16 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-3"
       >
         {problems.map((p) => (
-          <div key={p.lead} className="u-card bg-stage p-8">
+          <div key={p.lead} className="u-card bg-stage p-6 sm:p-8">
             <p className="font-display text-xl font-bold tracking-tight text-ink">{p.lead}</p>
             <p className="mt-3 text-[15px] leading-relaxed text-ink-dim">{p.body}</p>
           </div>
